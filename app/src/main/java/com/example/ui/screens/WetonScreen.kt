@@ -146,7 +146,7 @@ fun WetonScreen(
                         )
                     )
                     .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
             ) {
                 Column {
                     Row(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -139,30 +140,28 @@ fun CalendarScreen(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .background(KremJawa)
     ) {
-        // 1. SOGAN & KERATON GOLD TOP BANNER
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41),
-                                Color(0xFF795548)
-                            )
+        // 1. SOGAN & KERATON GOLD TOP BANNER (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41),
+                            Color(0xFF795548)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-            ) {
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
                 Column {
                     // Profile & Top Icon Row
                     Row(
@@ -397,10 +396,17 @@ fun CalendarScreen(
                     }
                 }
             }
-        }
 
-        // 2. HELPFUL INFO STRIP
-        if (showHintBanner) {
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // 2. HELPFUL INFO STRIP
+            if (showHintBanner) {
             item {
                 Surface(
                     color = SoganPrimary,
@@ -1062,6 +1068,7 @@ fun CalendarScreen(
         item {
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
     }
 
     if (showAddEventDialog) {

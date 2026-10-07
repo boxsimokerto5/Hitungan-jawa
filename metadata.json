@@ -1,5 +1,5 @@
 {
-  "name": "Kalender Jawa",
+  "name": "Hitungan JAWA",
   "description": "Almanak & Kalender Jawa lengkap: Weton, Pasaran (Pancawara), Wuku, Neptu, Pranata Mangsa, Tahun Windu, dan peringatan tradisi adat Jawa.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

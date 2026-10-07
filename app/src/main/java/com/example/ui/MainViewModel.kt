@@ -45,7 +45,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         NotificationHelper.createNotificationChannels(application)
     }
 
-    private val _currentLanguage = MutableStateFlow(prefs.language)
+    private val _currentLanguage = MutableStateFlow<AppLanguage>(prefs.language)
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())
@@ -64,10 +64,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _isHolidayNotifEnabled = MutableStateFlow(prefs.isHolidayNotifEnabled)
+    private val _isHolidayNotifEnabled = MutableStateFlow<Boolean>(prefs.isHolidayNotifEnabled)
     val isHolidayNotifEnabled: StateFlow<Boolean> = _isHolidayNotifEnabled.asStateFlow()
 
-    private val _isActivityNotifEnabled = MutableStateFlow(prefs.isActivityNotifEnabled)
+    private val _isActivityNotifEnabled = MutableStateFlow<Boolean>(prefs.isActivityNotifEnabled)
     val isActivityNotifEnabled: StateFlow<Boolean> = _isActivityNotifEnabled.asStateFlow()
 
     // Derived Javanese date for currently selected date
@@ -233,15 +233,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun sendTestNotification() {
         val context = getApplication<Application>()
         val lang = _currentLanguage.value
-        val title = when (lang) {
+        val title: String = when (lang) {
             AppLanguage.JAVANESE -> "Pangeling Kalender Jawa Aktif!"
             AppLanguage.INDONESIAN -> "Pengingat Kalender Jawa Aktif!"
             AppLanguage.ENGLISH -> "Javanese Calendar Reminder Active!"
+            else -> "Javanese Calendar Reminder Active!"
         }
-        val message = when (lang) {
+        val message: String = when (lang) {
             AppLanguage.JAVANESE -> "Notifikasi otomatis pèngetan dinten tradisi & kagiyatan lumaku kanthi sae. Rahayu!"
             AppLanguage.INDONESIAN -> "Notifikasi otomatis hari besar, malam sakral & agenda Anda berfungsi dengan sempurna!"
             AppLanguage.ENGLISH -> "Automated Javanese traditional alerts and activities are running smoothly!"
+            else -> "Automated Javanese traditional alerts and activities are running smoothly!"
         }
         NotificationHelper.showHolidayNotification(
             context = context,
@@ -257,8 +259,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // --- Weton Kelahiran Calculation & Persistence ---
-    private val initialBirthDate: LocalDate = prefs.userBirthDate?.let {
-        try { LocalDate.parse(it) } catch (e: Exception) { null }
+    private val initialBirthDate: LocalDate = prefs.userBirthDate?.let { str: String ->
+        try { LocalDate.parse(str) } catch (e: Exception) { null }
     } ?: LocalDate.of(1995, 8, 17)
 
     private val _birthDateForWeton = MutableStateFlow(initialBirthDate)
@@ -273,8 +275,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     private val _savedUserBirthDate = MutableStateFlow<LocalDate?>(
-        prefs.userBirthDate?.let {
-            try { LocalDate.parse(it) } catch (e: Exception) { null }
+        prefs.userBirthDate?.let { str: String ->
+            try { LocalDate.parse(str) } catch (e: Exception) { null }
         }
     )
     val savedUserBirthDate: StateFlow<LocalDate?> = _savedUserBirthDate.asStateFlow()
