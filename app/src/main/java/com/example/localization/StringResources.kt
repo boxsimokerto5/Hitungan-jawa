@@ -17,6 +17,16 @@ object StringResources {
             AppLanguage.INDONESIAN to "Kalender",
             AppLanguage.ENGLISH to "Calendar"
         ),
+        "tab_weton" to mapOf(
+            AppLanguage.JAVANESE to "Weton",
+            AppLanguage.INDONESIAN to "Weton",
+            AppLanguage.ENGLISH to "Weton"
+        ),
+        "tab_hitungan_jawa" to mapOf(
+            AppLanguage.JAVANESE to "Hitungan Jawa",
+            AppLanguage.INDONESIAN to "Hitungan Jawa",
+            AppLanguage.ENGLISH to "Hitungan Jawa"
+        ),
         "tab_holidays" to mapOf(
             AppLanguage.JAVANESE to "Tradisi & Pèngetan",
             AppLanguage.INDONESIAN to "Hari Besar & Tradisi",

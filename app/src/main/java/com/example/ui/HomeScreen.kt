@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.EventNote
@@ -29,6 +30,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.localization.StringResources
 import com.example.ui.screens.AboutUsScreen
@@ -38,6 +41,7 @@ import com.example.ui.screens.PlannerScreen
 import com.example.ui.screens.PrivacyPolicyScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.WetonScreen
+import com.example.ui.screens.hitungan.HitunganJawaScreen
 import com.example.ui.theme.KeratonGoldContainer
 import com.example.ui.theme.KremJawa
 import com.example.ui.theme.SoganDark
@@ -63,6 +67,7 @@ fun HomeScreen(
                 NavigationBar(
                     containerColor = Color.White,
                     contentColor = SoganPrimary,
+                    tonalElevation = 6.dp,
                     modifier = Modifier.testTag("bottom_nav_bar")
                 ) {
                     NavigationBarItem(
@@ -75,7 +80,9 @@ fun HomeScreen(
                         label = {
                             Text(
                                 StringResources.get("tab_calendar", language),
-                                fontWeight = if (selectedTab == 0 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTab == 0 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -98,7 +105,9 @@ fun HomeScreen(
                         label = {
                             Text(
                                 StringResources.get("tab_weton", language),
-                                fontWeight = if (selectedTab == 1 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTab == 1 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -117,11 +126,38 @@ fun HomeScreen(
                             selectedTab = 2
                             activeSubScreen = SubScreen.NONE
                         },
+                        icon = { Icon(Icons.Default.Calculate, contentDescription = null) },
+                        label = {
+                            Text(
+                                StringResources.get("tab_hitungan_jawa", language),
+                                fontWeight = if (selectedTab == 2 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFFB45309),
+                            selectedTextColor = Color(0xFFB45309),
+                            indicatorColor = Color(0xFFFEF3C7),
+                            unselectedIconColor = Color(0xFF8D6E63),
+                            unselectedTextColor = Color(0xFF8D6E63)
+                        ),
+                        modifier = Modifier.testTag("nav_item_hitungan_jawa")
+                    )
+
+                    NavigationBarItem(
+                        selected = selectedTab == 3 && activeSubScreen == SubScreen.NONE,
+                        onClick = {
+                            selectedTab = 3
+                            activeSubScreen = SubScreen.NONE
+                        },
                         icon = { Icon(Icons.Default.Celebration, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_holidays", language),
-                                fontWeight = if (selectedTab == 2 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTab == 3 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -135,16 +171,18 @@ fun HomeScreen(
                     )
 
                     NavigationBarItem(
-                        selected = selectedTab == 3 && activeSubScreen == SubScreen.NONE,
+                        selected = selectedTab == 4 && activeSubScreen == SubScreen.NONE,
                         onClick = {
-                            selectedTab = 3
+                            selectedTab = 4
                             activeSubScreen = SubScreen.NONE
                         },
                         icon = { Icon(Icons.Default.EventNote, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_planner", language),
-                                fontWeight = if (selectedTab == 3 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTab == 4 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -158,16 +196,18 @@ fun HomeScreen(
                     )
 
                     NavigationBarItem(
-                        selected = (selectedTab == 4) || activeSubScreen != SubScreen.NONE,
+                        selected = (selectedTab == 5) || activeSubScreen != SubScreen.NONE,
                         onClick = {
-                            selectedTab = 4
+                            selectedTab = 5
                             activeSubScreen = SubScreen.NONE
                         },
                         icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_settings", language),
-                                fontWeight = if (selectedTab == 4) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTab == 5) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 10.sp,
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -214,18 +254,21 @@ fun HomeScreen(
                                 viewModel = viewModel,
                                 onNavigateToCalendar = { selectedTab = 0 }
                             )
-                            2 -> HolidaysScreen(
+                            2 -> HitunganJawaScreen(
+                                viewModel = viewModel
+                            )
+                            3 -> HolidaysScreen(
                                 viewModel = viewModel,
                                 onNavigateToDate = { date ->
                                     viewModel.selectDate(date)
                                     selectedTab = 0
                                 }
                             )
-                            3 -> PlannerScreen(
+                            4 -> PlannerScreen(
                                 viewModel = viewModel,
                                 onNavigateToCalendar = { selectedTab = 0 }
                             )
-                            4 -> SettingsScreen(
+                            5 -> SettingsScreen(
                                 viewModel = viewModel,
                                 onNavigateToAboutUs = { activeSubScreen = SubScreen.ABOUT_US },
                                 onNavigateToPrivacyPolicy = { activeSubScreen = SubScreen.PRIVACY_POLICY }
