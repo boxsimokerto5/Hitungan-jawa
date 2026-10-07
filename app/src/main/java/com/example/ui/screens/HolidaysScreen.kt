@@ -1,10 +1,12 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,14 +14,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Celebration
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,11 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.R
 import com.example.calendar.JavaneseHoliday
 import com.example.calendar.JavaneseHolidayCategory
 import com.example.calendar.JavaneseHolidayInstance
@@ -106,9 +114,10 @@ fun HolidaysScreen(
         modifier = modifier
             .fillMaxSize()
             .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        contentPadding = PaddingValues(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Top Sogan & Keraton Gold Banner
+        // Top Sogan & Keraton Gold Header
         item {
             Box(
                 modifier = Modifier
@@ -122,7 +131,8 @@ fun HolidaysScreen(
                             )
                         )
                     )
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Column {
                     Row(
@@ -131,20 +141,13 @@ fun HolidaysScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
+                                contentDescription = "App Logo",
                                 modifier = Modifier
                                     .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(KeratonGoldContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Celebration,
-                                    contentDescription = null,
-                                    tint = SoganDark,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
+                                    .clip(RoundedCornerShape(10.dp))
+                            )
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text(
@@ -188,7 +191,7 @@ fun HolidaysScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = searchQuery,
@@ -202,6 +205,18 @@ fun HolidaysScreen(
                         },
                         leadingIcon = {
                             Icon(Icons.Default.Search, contentDescription = null, tint = SoganPrimary)
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                                    Icon(
+                                        Icons.Default.Clear,
+                                        contentDescription = "Hapus pencarian",
+                                        tint = SoganPrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
                         },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -221,52 +236,142 @@ fun HolidaysScreen(
 
         // Filter chips bar
         item {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    FilterChip(
+                        selected = currentFilter == JavaneseHolidayFilterTab.ALL,
+                        onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.ALL) },
+                        label = { Text(StringResources.get("filter_all", language), fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = SoganPrimary,
+                            selectedLabelColor = Color.White
+                        ),
+                        modifier = Modifier.testTag("filter_all_chip")
+                    )
+                }
+                item {
+                    FilterChip(
+                        selected = currentFilter == JavaneseHolidayFilterTab.KERATON,
+                        onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.KERATON) },
+                        label = { Text(StringResources.get("filter_keraton", language), fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFFD97706),
+                            selectedLabelColor = Color.White
+                        ),
+                        modifier = Modifier.testTag("filter_keraton_chip")
+                    )
+                }
+                item {
+                    FilterChip(
+                        selected = currentFilter == JavaneseHolidayFilterTab.ISLAM_JAWA,
+                        onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.ISLAM_JAWA) },
+                        label = { Text(StringResources.get("filter_islam_jawa", language), fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = BataMerah,
+                            selectedLabelColor = Color.White
+                        ),
+                        modifier = Modifier.testTag("filter_islam_jawa_chip")
+                    )
+                }
+                item {
+                    FilterChip(
+                        selected = currentFilter == JavaneseHolidayFilterTab.SAKRAL,
+                        onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.SAKRAL) },
+                        label = { Text(StringResources.get("filter_sakral", language), fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF7B1FA2),
+                            selectedLabelColor = Color.White
+                        ),
+                        modifier = Modifier.testTag("filter_sakral_chip")
+                    )
+                }
+            }
+        }
+
+        // Summary count and status
+        item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    .padding(horizontal = 14.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                FilterChip(
-                    selected = currentFilter == JavaneseHolidayFilterTab.ALL,
-                    onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.ALL) },
-                    label = { Text(StringResources.get("filter_all", language), fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = SoganPrimary,
-                        selectedLabelColor = Color.White
-                    ),
-                    modifier = Modifier.testTag("filter_all_chip")
+                Text(
+                    text = if (language == AppLanguage.JAVANESE) "Dhaftar Dina Luhur (${filteredList.size})"
+                    else if (language == AppLanguage.INDONESIAN) "Daftar Hari Besar & Sakral (${filteredList.size})"
+                    else "Holidays & Traditions (${filteredList.size})",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = SoganDark
                 )
-                FilterChip(
-                    selected = currentFilter == JavaneseHolidayFilterTab.KERATON,
-                    onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.KERATON) },
-                    label = { Text(StringResources.get("filter_keraton", language), fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFD97706),
-                        selectedLabelColor = Color.White
-                    ),
-                    modifier = Modifier.testTag("filter_keraton_chip")
+                Text(
+                    text = if (language == AppLanguage.JAVANESE) "Tutul kanggo rincian"
+                    else if (language == AppLanguage.INDONESIAN) "Ketuk untuk rincian & makna"
+                    else "Tap for details",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 11.sp,
+                    color = Color(0xFF8D6E63)
                 )
-                FilterChip(
-                    selected = currentFilter == JavaneseHolidayFilterTab.ISLAM_JAWA,
-                    onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.ISLAM_JAWA) },
-                    label = { Text(StringResources.get("filter_islam_jawa", language), fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = BataMerah,
-                        selectedLabelColor = Color.White
-                    ),
-                    modifier = Modifier.testTag("filter_islam_jawa_chip")
-                )
-                FilterChip(
-                    selected = currentFilter == JavaneseHolidayFilterTab.SAKRAL,
-                    onClick = { viewModel.setHolidayFilter(JavaneseHolidayFilterTab.SAKRAL) },
-                    label = { Text(StringResources.get("filter_sakral", language), fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF7B1FA2),
-                        selectedLabelColor = Color.White
-                    ),
-                    modifier = Modifier.testTag("filter_sakral_chip")
-                )
+            }
+        }
+
+        // Empty state when search or filter returns 0 results
+        if (filteredList.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .background(KeratonGoldContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.EventAvailable,
+                                contentDescription = null,
+                                tint = SoganPrimary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = if (language == AppLanguage.JAVANESE) "Ora ana dinten ageng ingkang cocog"
+                            else if (language == AppLanguage.INDONESIAN) "Tidak ada hari besar yang cocok dengan pencarian"
+                            else "No holidays found matching your query",
+                            fontWeight = FontWeight.Bold,
+                            color = SoganDark,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = if (language == AppLanguage.JAVANESE) "Coba atur tembung padosan utawi gantos filter kategori."
+                            else if (language == AppLanguage.INDONESIAN) "Coba ubah kata kunci atau ganti filter kategori di atas."
+                            else "Try clearing your search query or selecting another filter.",
+                            color = Color(0xFF8D6E63),
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
         }
 
@@ -415,10 +520,6 @@ fun HolidaysScreen(
                     }
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
