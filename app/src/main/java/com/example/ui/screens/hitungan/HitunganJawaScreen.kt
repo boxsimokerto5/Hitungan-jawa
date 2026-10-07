@@ -271,17 +271,17 @@ fun HitunganJawaScreen(
             .fillMaxSize()
             .background(KremJawa)
     ) {
-        // Top Header
+        // Top Header (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(SoganDark, SoganPrimary)
+                        colors = listOf(SoganDark, SoganPrimary, Color(0xFF6D4C41))
                     )
                 )
                 .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 18.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
         ) {
             Column {
                 Row(
@@ -291,14 +291,14 @@ fun HitunganJawaScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Hitungan Jawa",
-                            fontSize = 22.sp,
+                            text = "Hitungan JAWA",
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = "ꦥꦺꦠꦸꦔꦤ꧀ꦗꦮ • Pedoman Primbon Adiluhung",
-                            fontSize = 12.sp,
+                            fontSize = 11.5.sp,
                             color = KeratonGoldContainer
                         )
                     }
@@ -306,7 +306,7 @@ fun HitunganJawaScreen(
                         painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
                         contentDescription = "Logo Hitungan Jawa",
                         modifier = Modifier
-                            .size(44.dp)
+                            .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
                     )
                 }

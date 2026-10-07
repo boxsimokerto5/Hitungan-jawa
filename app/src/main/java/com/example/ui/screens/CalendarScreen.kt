@@ -28,6 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -77,6 +78,7 @@ import com.example.localization.StringResources
 import com.example.ui.MainViewModel
 import com.example.ui.components.AddEditEventDialog
 import com.example.ui.components.HolidayDetailDialog
+import com.example.ui.components.JavaneseDatePickerDialog
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
@@ -106,6 +108,7 @@ fun CalendarScreen(
     val datesWithEvents by viewModel.datesWithEvents.collectAsStateWithLifecycle()
 
     var showAddEventDialog by remember { mutableStateOf(false) }
+    var showDatePickerDialog by remember { mutableStateOf(false) }
     var holidayToShowDetail by remember { mutableStateOf<JavaneseHoliday?>(null) }
     var holidayInstanceDetail by remember { mutableStateOf<JavaneseHolidayInstance?>(null) }
     var showHintBanner by remember { mutableStateOf(true) }
@@ -232,6 +235,19 @@ fun CalendarScreen(
                                     Icons.Default.EditNote,
                                     contentDescription = "Catat Jadwal",
                                     tint = Color.White
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { showDatePickerDialog = true },
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .testTag("calendar_pick_date_button")
+                            ) {
+                                Icon(
+                                    Icons.Default.CalendarMonth,
+                                    contentDescription = "Pilih Tanggal Petungan",
+                                    tint = KeratonGold
                                 )
                             }
 
@@ -1069,6 +1085,19 @@ fun CalendarScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+    }
+
+    if (showDatePickerDialog) {
+        JavaneseDatePickerDialog(
+            initialDate = selectedDate,
+            title = if (language == AppLanguage.JAVANESE) "Pilih Tanggal Petungan" else "Pilih Tanggal Kalender Jawa",
+            language = language,
+            onDismissRequest = { showDatePickerDialog = false },
+            onDateSelected = { pickedDate ->
+                viewModel.selectDate(pickedDate)
+                showDatePickerDialog = false
+            }
+        )
     }
 
     if (showAddEventDialog) {

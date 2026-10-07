@@ -110,30 +110,27 @@ fun HolidaysScreen(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        contentPadding = PaddingValues(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .background(KremJawa)
     ) {
-        // Top Sogan & Keraton Gold Header
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41)
-                            )
+        // Top Sogan & Keraton Gold Header (FIXED)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
-            ) {
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -232,10 +229,17 @@ fun HolidaysScreen(
                     )
                 }
             }
-        }
 
-        // Filter chips bar
-        item {
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Filter chips bar
+            item {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -521,6 +525,7 @@ fun HolidaysScreen(
                 }
             }
         }
+    }
     }
 
     holidayToShowDetail?.let { holiday ->

@@ -1,14 +1,15 @@
 package com.example.ui.screens
 
-import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import com.example.ui.components.JavaneseDatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -111,169 +112,176 @@ fun WetonScreen(
 
     val isCurrentDateSaved = savedUserBirthDate == birthDate
 
-    // Native DatePickerDialog helper
-    fun showDatePicker(initialDate: LocalDate, onDateSelected: (LocalDate) -> Unit) {
-        DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                onDateSelected(LocalDate.of(year, month + 1, dayOfMonth))
-            },
-            initialDate.year,
-            initialDate.monthValue - 1,
-            initialDate.dayOfMonth
-        ).show()
+    var showDatePickerDialog by remember { mutableStateOf(false) }
+    var pickerInitialDate by remember { mutableStateOf(birthDate) }
+    var pickerTitle by remember { mutableStateOf("Pilih Tanggal Lahir") }
+    var onDateConfirmed by remember { mutableStateOf<(LocalDate) -> Unit>({}) }
+
+    fun openDatePicker(initial: LocalDate, titleText: String, onSelect: (LocalDate) -> Unit) {
+        pickerInitialDate = initial
+        pickerTitle = titleText
+        onDateConfirmed = onSelect
+        showDatePickerDialog = true
     }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(KremJawa)
     ) {
-        // 1. TOP HEADER BANNER
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41),
-                                Color(0xFF795548)
-                            )
+        // 1. TOP HEADER BANNER (FIXED)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41),
+                            Color(0xFF795548)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
-                                contentDescription = "App Logo",
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    text = StringResources.get("weton_calculator_title", language),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Dina • Pasaran • Neptu • Watak Primbon",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = KeratonGold,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
-
-                        IconButton(
-                            onClick = {
-                                val nextLang = when (language) {
-                                    AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
-                                    AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
-                                    AppLanguage.ENGLISH -> AppLanguage.JAVANESE
-                                }
-                                viewModel.setLanguage(nextLang)
-                            },
-                            modifier = Modifier.size(34.dp)
-                        ) {
-                            Text(
-                                text = when (language) {
-                                    AppLanguage.JAVANESE -> "JV"
-                                    AppLanguage.INDONESIAN -> "ID"
-                                    AppLanguage.ENGLISH -> "EN"
-                                },
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = KeratonGold
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = StringResources.get("weton_calculator_desc", language),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 11.5.sp
-                    )
-                }
-            }
-        }
-
-        // 2. SUB-TABS: Weton Kelahiran vs Petungan Jodoh
-        item {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                shadowElevation = 1.dp
-            ) {
-                TabRow(
-                    selectedTabIndex = activeTab,
-                    containerColor = Color.White,
-                    contentColor = SoganPrimary,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[activeTab]),
-                            color = SoganPrimary,
-                            height = 3.dp
-                        )
-                    }
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Tab(
-                        selected = activeTab == 0,
-                        onClick = { activeTab = 0 },
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (language == AppLanguage.JAVANESE) "Weton Lair" else "Weton Kelahiran",
-                                    fontWeight = if (activeTab == 0) FontWeight.Bold else FontWeight.Normal
-                                )
-                            }
-                        },
-                        selectedContentColor = SoganPrimary,
-                        unselectedContentColor = Color(0xFF8D6E63)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
+                            contentDescription = "App Logo",
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = StringResources.get("weton_calculator_title", language),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Dina • Pasaran • Neptu • Watak Primbon",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = KeratonGold,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
 
-                    Tab(
-                        selected = activeTab == 1,
-                        onClick = { activeTab = 1 },
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (language == AppLanguage.JAVANESE) "Petungan Jodho" else "Kecocokan Jodoh",
-                                    fontWeight = if (activeTab == 1) FontWeight.Bold else FontWeight.Normal
-                                )
+                    IconButton(
+                        onClick = {
+                            val nextLang = when (language) {
+                                AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
+                                AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
+                                AppLanguage.ENGLISH -> AppLanguage.JAVANESE
                             }
+                            viewModel.setLanguage(nextLang)
                         },
-                        selectedContentColor = Color(0xFFC2185B),
-                        unselectedContentColor = Color(0xFF8D6E63)
-                    )
+                        modifier = Modifier.size(34.dp)
+                    ) {
+                        Text(
+                            text = when (language) {
+                                AppLanguage.JAVANESE -> "JV"
+                                AppLanguage.INDONESIAN -> "ID"
+                                AppLanguage.ENGLISH -> "EN"
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = KeratonGold
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = StringResources.get("weton_calculator_desc", language),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 11.5.sp
+                )
             }
         }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // 2. SUB-TABS: Weton Kelahiran vs Petungan Jodoh (STICKY)
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White,
+            shadowElevation = 1.dp
+        ) {
+            TabRow(
+                selectedTabIndex = activeTab,
+                containerColor = Color.White,
+                contentColor = SoganPrimary,
+                indicator = { tabPositions ->
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[activeTab]),
+                        color = SoganPrimary,
+                        height = 3.dp
+                    )
+                }
+            ) {
+                Tab(
+                    selected = activeTab == 0,
+                    onClick = { activeTab = 0 },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (language == AppLanguage.JAVANESE) "Weton Lair" else "Weton Kelahiran",
+                                fontWeight = if (activeTab == 0) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    },
+                    selectedContentColor = SoganPrimary,
+                    unselectedContentColor = Color(0xFF8D6E63)
+                )
+
+                Tab(
+                    selected = activeTab == 1,
+                    onClick = { activeTab = 1 },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (language == AppLanguage.JAVANESE) "Petungan Jodho" else "Kecocokan Jodoh",
+                                fontWeight = if (activeTab == 1) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    },
+                    selectedContentColor = Color(0xFFC2185B),
+                    unselectedContentColor = Color(0xFF8D6E63)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
         if (activeTab == 0) {
             // ==================== TAB 0: WETON KELAHIRAN PRIBADI ====================
@@ -304,7 +312,10 @@ fun WetonScreen(
 
                             Button(
                                 onClick = {
-                                    showDatePicker(birthDate) { newDate ->
+                                    openDatePicker(
+                                        birthDate,
+                                        if (language == AppLanguage.JAVANESE) "Pilih Tanggal Weton Lair" else "Pilih Tanggal Lahir"
+                                    ) { newDate ->
                                         viewModel.setBirthDateForWeton(newDate)
                                     }
                                 },
@@ -330,7 +341,10 @@ fun WetonScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
                                 .clickable {
-                                    showDatePicker(birthDate) { newDate ->
+                                    openDatePicker(
+                                        birthDate,
+                                        if (language == AppLanguage.JAVANESE) "Pilih Tanggal Weton Lair" else "Pilih Tanggal Lahir"
+                                    ) { newDate ->
                                         viewModel.setBirthDateForWeton(newDate)
                                     }
                                 },
@@ -949,7 +963,10 @@ fun WetonScreen(
                     partnerBirthDate = partnerBirthDate,
                     partnerWeton = partnerWetonResult,
                     onSelectPartnerDate = {
-                        showDatePicker(partnerBirthDate ?: LocalDate.of(1996, 5, 20)) { newDate ->
+                        openDatePicker(
+                            partnerBirthDate ?: LocalDate.of(1996, 5, 20),
+                            if (language == AppLanguage.JAVANESE) "Pilih Tanggal Lair Pasangan" else "Pilih Tanggal Lahir Pasangan"
+                        ) { newDate ->
                             viewModel.setPartnerBirthDate(newDate)
                         }
                     }
@@ -960,6 +977,20 @@ fun WetonScreen(
         item {
             Spacer(modifier = Modifier.height(28.dp))
         }
+    }
+    }
+
+    if (showDatePickerDialog) {
+        JavaneseDatePickerDialog(
+            initialDate = pickerInitialDate,
+            title = pickerTitle,
+            language = language,
+            onDismissRequest = { showDatePickerDialog = false },
+            onDateSelected = { selected ->
+                onDateConfirmed(selected)
+                showDatePickerDialog = false
+            }
+        )
     }
 }
 

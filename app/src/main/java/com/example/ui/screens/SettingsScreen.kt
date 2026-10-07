@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -88,98 +89,103 @@ fun SettingsScreen(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(KremJawa)
     ) {
-        // Top Banner
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41)
-                            )
+        // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(KeratonGoldContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Settings,
-                                    contentDescription = null,
-                                    tint = SoganDark,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    text = StringResources.get("tab_settings", language),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = if (language == AppLanguage.JAVANESE) "Basa, Notifikasi & Info Pananggalan"
-                                    else if (language == AppLanguage.INDONESIAN) "Bahasa, Notifikasi & Info Kalender"
-                                    else "Language, Notifications & Calendar Info",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = KeratonGold,
-                                    fontSize = 11.sp
-                                )
-                            }
-                        }
-
-                        IconButton(
-                            onClick = {
-                                val nextLang = when (language) {
-                                    AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
-                                    AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
-                                    AppLanguage.ENGLISH -> AppLanguage.JAVANESE
-                                }
-                                viewModel.setLanguage(nextLang)
-                            },
-                            modifier = Modifier.size(34.dp)
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(KeratonGoldContainer),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = when (language) {
-                                    AppLanguage.JAVANESE -> "JV"
-                                    AppLanguage.INDONESIAN -> "ID"
-                                    AppLanguage.ENGLISH -> "EN"
-                                },
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = KeratonGold
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = null,
+                                tint = SoganDark,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = StringResources.get("tab_settings", language),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = if (language == AppLanguage.JAVANESE) "Basa, Notifikasi & Info Pananggalan"
+                                else if (language == AppLanguage.INDONESIAN) "Bahasa, Notifikasi & Info Kalender"
+                                else "Language, Notifications & Calendar Info",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = KeratonGold,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = {
+                            val nextLang = when (language) {
+                                AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
+                                AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
+                                AppLanguage.ENGLISH -> AppLanguage.JAVANESE
+                            }
+                            viewModel.setLanguage(nextLang)
+                        },
+                        modifier = Modifier.size(34.dp)
+                    ) {
+                        Text(
+                            text = when (language) {
+                                AppLanguage.JAVANESE -> "JV"
+                                AppLanguage.INDONESIAN -> "ID"
+                                AppLanguage.ENGLISH -> "EN"
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = KeratonGold
+                        )
                     }
                 }
             }
         }
 
-        // 1. Language Card
-        item {
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // 1. Language Card
+            item {
             Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -604,7 +610,7 @@ fun SettingsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Kalender Jawa • Versi 1.0",
+                            text = "Hitungan JAWA • Versi 1.0",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = SoganDark
@@ -623,5 +629,6 @@ fun SettingsScreen(
         item {
             Spacer(modifier = Modifier.height(28.dp))
         }
+    }
     }
 }

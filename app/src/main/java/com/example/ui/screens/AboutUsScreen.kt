@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,70 +59,75 @@ fun AboutUsScreen(
 ) {
     BackHandler { onBack() }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(KremJawa)
     ) {
-        // Top Banner
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41)
-                            )
+        // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.25f))
+                            .testTag("about_back_button")
                     ) {
-                        IconButton(
-                            onClick = onBack,
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.25f))
-                                .testTag("about_back_button")
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = StringResources.get("back", language),
-                                tint = Color.White
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = StringResources.get("about_us", language),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "Almanak & Kalender Jawa Lengkap",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = KeratonGold,
-                                fontSize = 11.sp
-                            )
-                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = StringResources.get("back", language),
+                            tint = Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = StringResources.get("about_us", language),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Almanak & Kalender Jawa Lengkap",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = KeratonGold,
+                            fontSize = 11.sp
+                        )
                     }
                 }
             }
         }
 
-        // Section 1: Overview
-        item {
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Section 1: Overview
+            item {
             Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -381,7 +387,7 @@ fun AboutUsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Kalender Jawa (Almanak & Weton)",
+                            text = "Hitungan JAWA (Almanak & Weton)",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = SoganDark
@@ -413,5 +419,6 @@ fun AboutUsScreen(
         item {
             Spacer(modifier = Modifier.height(28.dp))
         }
+    }
     }
 }

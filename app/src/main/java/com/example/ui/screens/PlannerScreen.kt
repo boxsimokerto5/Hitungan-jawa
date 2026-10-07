@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -86,213 +87,218 @@ fun PlannerScreen(
     var eventToEdit by remember { mutableStateOf<PlannerEvent?>(null) }
     var showSedaDialog by remember { mutableStateOf(false) }
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(KremJawa),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .background(KremJawa)
     ) {
-        // Top Banner
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                SoganDark,
-                                SoganPrimary,
-                                Color(0xFF6D4C41)
-                            )
+        // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            SoganDark,
+                            SoganPrimary,
+                            Color(0xFF6D4C41)
                         )
                     )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(KeratonGoldContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.EventNote,
-                                    contentDescription = null,
-                                    tint = SoganDark,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    text = StringResources.get("tab_planner", language),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = if (language == AppLanguage.JAVANESE) "Cathetan Weton, Slametan & Kagiyatan"
-                                    else if (language == AppLanguage.INDONESIAN) "Jadwal, Selapanan Weton & Hajatan"
-                                    else "Schedule, Weton Milestones & Events",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = KeratonGold,
-                                    fontSize = 11.sp
-                                )
-                            }
-                        }
-
-                        IconButton(
-                            onClick = {
-                                val nextLang = when (language) {
-                                    AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
-                                    AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
-                                    AppLanguage.ENGLISH -> AppLanguage.JAVANESE
-                                }
-                                viewModel.setLanguage(nextLang)
-                            },
-                            modifier = Modifier.size(34.dp)
+                )
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(KeratonGoldContainer),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = when (language) {
-                                    AppLanguage.JAVANESE -> "JV"
-                                    AppLanguage.INDONESIAN -> "ID"
-                                    AppLanguage.ENGLISH -> "EN"
-                                },
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = KeratonGold
+                            Icon(
+                                Icons.Default.EventNote,
+                                contentDescription = null,
+                                tint = SoganDark,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                        Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = selectedDate.format(
-                                    DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", when (language) {
-                                        AppLanguage.JAVANESE -> Locale("id")
-                                        AppLanguage.INDONESIAN -> Locale("id")
-                                        AppLanguage.ENGLISH -> Locale.ENGLISH
-                                    })
-                                ),
+                                text = StringResources.get("tab_planner", language),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Text(
-                                text = "${selectedJavaneseDate.wetonName} (Neptu ${selectedJavaneseDate.neptuTotal}) • ${selectedJavaneseDate.day} ${selectedJavaneseDate.monthNameJv} ${selectedJavaneseDate.yearJavanese} AJ",
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = if (language == AppLanguage.JAVANESE) "Cathetan Weton, Slametan & Kagiyatan"
+                                else if (language == AppLanguage.INDONESIAN) "Jadwal, Selapanan Weton & Hajatan"
+                                else "Schedule, Weton Milestones & Events",
+                                style = MaterialTheme.typography.bodySmall,
                                 color = KeratonGold,
-                                fontWeight = FontWeight.SemiBold
+                                fontSize = 11.sp
                             )
-                        }
-
-                        IconButton(
-                            onClick = onNavigateToCalendar,
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.25f))
-                        ) {
-                            Icon(Icons.Default.CalendarMonth, contentDescription = "Open Calendar", tint = Color.White)
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    IconButton(
+                        onClick = {
+                            val nextLang = when (language) {
+                                AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
+                                AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
+                                AppLanguage.ENGLISH -> AppLanguage.JAVANESE
+                            }
+                            viewModel.setLanguage(nextLang)
+                        },
+                        modifier = Modifier.size(34.dp)
                     ) {
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = Color.White,
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { showAddDialog = true }
-                                .testTag("add_event_main_button")
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Add,
-                                    contentDescription = null,
-                                    tint = SoganPrimary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = StringResources.get("add_activity", language),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = SoganPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
+                        Text(
+                            text = when (language) {
+                                AppLanguage.JAVANESE -> "JV"
+                                AppLanguage.INDONESIAN -> "ID"
+                                AppLanguage.ENGLISH -> "EN"
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = KeratonGold
+                        )
+                    }
+                }
 
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = KeratonGoldContainer,
-                            modifier = Modifier
-                                .clickable { showSedaDialog = true }
-                                .testTag("calculator_seda_button")
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = selectedDate.format(
+                                DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", when (language) {
+                                    AppLanguage.JAVANESE -> Locale("id")
+                                    AppLanguage.INDONESIAN -> Locale("id")
+                                    AppLanguage.ENGLISH -> Locale.ENGLISH
+                                })
+                            ),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "${selectedJavaneseDate.wetonName} (Neptu ${selectedJavaneseDate.neptuTotal}) • ${selectedJavaneseDate.day} ${selectedJavaneseDate.monthNameJv} ${selectedJavaneseDate.yearJavanese} AJ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = KeratonGold,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onNavigateToCalendar,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.25f))
+                    ) {
+                        Icon(Icons.Default.CalendarMonth, contentDescription = "Open Calendar", tint = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color.White,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showAddDialog = true }
+                            .testTag("add_event_main_button")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Default.Calculate,
-                                    contentDescription = null,
-                                    tint = SoganDark,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = if (language == AppLanguage.JAVANESE) "Petungan Seda" else if (language == AppLanguage.INDONESIAN) "Hitung Slametan" else "Memorial Calc",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = SoganDark,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = SoganPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = StringResources.get("add_activity", language),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = SoganPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = KeratonGoldContainer,
+                        modifier = Modifier
+                            .clickable { showSedaDialog = true }
+                            .testTag("calculator_seda_button")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Calculate,
+                                contentDescription = null,
+                                tint = SoganDark,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (language == AppLanguage.JAVANESE) "Petungan Seda" else if (language == AppLanguage.INDONESIAN) "Hitung Slametan" else "Memorial Calc",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = SoganDark,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
             }
         }
 
-        // Section Title: Kegiatan untuk Tanggal Terpilih
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = StringResources.get("activities_title", language),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = SoganDark
-                )
+        // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Section Title: Kegiatan untuk Tanggal Terpilih
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = StringResources.get("activities_title", language),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = SoganDark
+                    )
 
                 Surface(
                     shape = RoundedCornerShape(10.dp),
@@ -383,6 +389,7 @@ fun PlannerScreen(
         item {
             Spacer(modifier = Modifier.height(28.dp))
         }
+    }
     }
 
     if (showAddDialog) {
