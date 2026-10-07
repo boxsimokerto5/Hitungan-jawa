@@ -6,14 +6,19 @@ on:
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type (Release)'
+        required: false
+        default: 'Release'
 
 jobs:
   build:
-    name: Build & Sign Release Bundle
+    name: Build & Sign Release APK & AAB
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -25,6 +30,13 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Prepare Secrets Configuration Files
+        run: |
+          touch .env
+          touch .env.example
+          echo "# Build environment secrets" > .env.example
+          echo "# Build environment secrets" > .env
+
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x gradlew
 
@@ -32,32 +44,51 @@ jobs:
         id: setup-keystore
         run: |
           KEYSTORE_FILE="${{ github.workspace }}/my-upload-key.jks"
+          KEY_PASS="KalenderJawaPass2026!"
+          KEY_ALIAS="upload"
           
           if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "Decoding release keystore from GitHub Secrets..."
+            echo "Decoding release keystore from GitHub Secret (KEYSTORE_BASE64)..."
             echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$KEYSTORE_FILE"
-            echo "STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
-            echo "KEY_ALIAS=${{ secrets.KEY_ALIAS || 'upload' }}" >> $GITHUB_ENV
+            STORE_PW="${{ secrets.STORE_PASSWORD || 'KalenderJawaPass2026!' }}"
+            KEY_PW="${{ secrets.KEY_PASSWORD || secrets.STORE_PASSWORD || 'KalenderJawaPass2026!' }}"
+            ALIAS_NAME="${{ secrets.KEY_ALIAS || 'upload' }}"
+          elif [ -f "$KEYSTORE_FILE" ]; then
+            echo "Using existing repository upload keystore ($KEYSTORE_FILE)..."
+            STORE_PW="KalenderJawaPass2026!"
+            KEY_PW="KalenderJawaPass2026!"
+            ALIAS_NAME="upload"
           else
-            echo "Generating automatic release keystore for Play Store signature..."
-            PASS="LuachCalendarPass2026!"
+            echo "Generating automatic release keystore for Google Play Store signature..."
             keytool -genkeypair -v \
               -keystore "$KEYSTORE_FILE" \
-              -alias "upload" \
+              -alias "$KEY_ALIAS" \
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000 \
-              -storepass "$PASS" \
-              -keypass "$PASS" \
-              -dname "CN=Luach Hebrew Calendar, OU=Mobile App, O=Luach, L=Jerusalem, ST=Jerusalem, C=IL"
+              -storepass "$KEY_PASS" \
+              -keypass "$KEY_PASS" \
+              -dname "CN=Kalender Jawa, OU=Mobile App, O=GecckoCreator, L=Yogyakarta, ST=DIY, C=ID"
             
-            echo "STORE_PASSWORD=$PASS" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=$PASS" >> $GITHUB_ENV
-            echo "KEY_ALIAS=upload" >> $GITHUB_ENV
+            STORE_PW="$KEY_PASS"
+            KEY_PW="$KEY_PASS"
+            ALIAS_NAME="$KEY_ALIAS"
             echo "Keystore created successfully."
           fi
+          
           echo "KEYSTORE_PATH=$KEYSTORE_FILE" >> $GITHUB_ENV
+          echo "STORE_PASSWORD=$STORE_PW" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=$KEY_PW" >> $GITHUB_ENV
+          echo "KEY_ALIAS=$ALIAS_NAME" >> $GITHUB_ENV
+          
+          # Extract Fingerprints for Google Play Console / OAuth setup
+          echo "Extracting keystore certificate fingerprints..."
+          CERT_INFO=$(keytool -list -v -keystore "$KEYSTORE_FILE" -storepass "$STORE_PW" -alias "$ALIAS_NAME")
+          SHA1_FINGERPRINT=$(echo "$CERT_INFO" | grep "SHA1:" | head -n 1 | awk '{print $2}')
+          SHA256_FINGERPRINT=$(echo "$CERT_INFO" | grep "SHA256:" | head -n 1 | awk '{print $2}')
+          
+          echo "SHA1=$SHA1_FINGERPRINT" >> $GITHUB_ENV
+          echo "SHA256=$SHA256_FINGERPRINT" >> $GITHUB_ENV
 
       - name: Build Signed Release APK
         env:
@@ -75,64 +106,108 @@ jobs:
           KEY_ALIAS: ${{ env.KEY_ALIAS }}
         run: ./gradlew bundleRelease --stacktrace
 
-      - name: Prepare Output Files
+      - name: Package Output Artifacts & Generate Release Documentation
         run: |
           mkdir -p release-artifacts
           
-          # Find and copy generated APK
-          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          if [ -f "$APK_PATH" ]; then
-            cp "$APK_PATH" release-artifacts/Luach-Hebrew-Calendar-release.apk
-            echo "APK copied to release-artifacts."
+          # Locate and copy generated APK
+          APK_PATH=$(find app/build -name "*release*.apk" 2>/dev/null | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            APK_PATH=$(find app/build -name "*.apk" 2>/dev/null | grep -v "unaligned" | head -n 1)
+          fi
+          if [ -n "$APK_PATH" ] && [ -f "$APK_PATH" ]; then
+            cp "$APK_PATH" release-artifacts/Kalender-Jawa-v1.0-release.apk
+            echo "Signed APK copied successfully from $APK_PATH."
           fi
           
-          # Find and copy generated AAB
-          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
-          if [ -f "$AAB_PATH" ]; then
-            cp "$AAB_PATH" release-artifacts/Luach-Hebrew-Calendar-release.aab
-            echo "AAB copied to release-artifacts."
+          # Locate and copy generated AAB
+          AAB_PATH=$(find app/build -name "*release*.aab" 2>/dev/null | head -n 1)
+          if [ -z "$AAB_PATH" ]; then
+            AAB_PATH=$(find app/build -name "*.aab" 2>/dev/null | head -n 1)
+          fi
+          if [ -n "$AAB_PATH" ] && [ -f "$AAB_PATH" ]; then
+            cp "$AAB_PATH" release-artifacts/Kalender-Jawa-v1.0-release.aab
+            echo "Signed AAB copied successfully from $AAB_PATH."
           fi
           
-          # Save keystore for user backup
+          # Backup keystore and create base64 string
           cp "${{ env.KEYSTORE_PATH }}" release-artifacts/upload-keystore.jks
+          base64 -w 0 "${{ env.KEYSTORE_PATH }}" > release-artifacts/upload-keystore.base64.txt
           
-          # Create info file
-          cat << 'EOF' > release-artifacts/RELEASE_SIGNING_INFO.txt
-          ==================================================
-          LUACH HEBREW CALENDAR - RELEASE SIGNING DETAILS
-          ==================================================
-          Package Name (ApplicationId): com.hebrewcalendar.gecckocreator
+          # Generate documentation text file
+          cat << EOF > release-artifacts/RELEASE_SIGNING_INFO.txt
+          ======================================================================
+          KALENDER JAWA (ALMANAK & WETON) - RELEASE SIGNING DETAILS
+          ======================================================================
+          App Name                     : Kalender Jawa
+          Package Name (ApplicationId) : com.hitunganjawa.gecckocreator
+          Version Name                 : 1.0
+          Version Code                 : 1
           
-          AAB File (for Google Play Console):
-          - Luach-Hebrew-Calendar-release.aab
+          ----------------------------------------------------------------------
+          FILE ARTIFACTS:
+          ----------------------------------------------------------------------
+          1. Kalender-Jawa-v1.0-release.aab
+             -> Android App Bundle (AAB). Upload this file to Google Play Console.
           
-          APK File (for direct installation / testing):
-          - Luach-Hebrew-Calendar-release.apk
+          2. Kalender-Jawa-v1.0-release.apk
+             -> Direct-install standalone APK file for Android smartphones.
           
-          Keystore File (Backup this securely for future Play Store updates!):
-          - upload-keystore.jks
-          Alias: upload
-          Password: LuachCalendarPass2026! (or your GitHub Secret if provided)
-          ==================================================
+          3. upload-keystore.jks
+             -> Keystore file used to sign the app. SIMPAN FILE INI DENGAN AMAN!
+                File ini diperlukan untuk menandatangani pembaruan aplikasi di Play Store.
+          
+          4. upload-keystore.base64.txt
+             -> Base64 string dari file keystore. Dapat disimpan di GitHub Secrets
+                (KEYSTORE_BASE64) untuk build CI/CD otomatis berikutnya.
+          
+          ----------------------------------------------------------------------
+          KEYSTORE CREDENTIALS:
+          ----------------------------------------------------------------------
+          Keystore Alias    : ${{ env.KEY_ALIAS }}
+          Keystore Password : ${{ env.STORE_PASSWORD }}
+          Key Password      : ${{ env.KEY_PASSWORD }}
+          SHA-1 Fingerprint : ${{ env.SHA1 }}
+          SHA-256 Fingerprint: ${{ env.SHA256 }}
+          ======================================================================
+          EOF
+          
+          # Write to GitHub Actions Step Summary
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## 🚀 Kalender Jawa Release Build Complete!
+          
+          | Property | Value |
+          |---|---|
+          | **Application ID** | \`com.hitunganjawa.gecckocreator\` |
+          | **App Version** | \`1.0\` (versionCode: 1) |
+          | **Keystore Alias** | \`${{ env.KEY_ALIAS }}\` |
+          | **Keystore Password** | \`${{ env.STORE_PASSWORD }}\` |
+          | **SHA-1 Fingerprint** | \`${{ env.SHA1 }}\` |
+          | **SHA-256 Fingerprint** | \`${{ env.SHA256 }}\` |
+          
+          ### 📦 Generated Files:
+          - **Google Play Bundle**: \`Kalender-Jawa-v1.0-release.aab\` (Siap upload ke Play Console)
+          - **Direct Install APK**: \`Kalender-Jawa-v1.0-release.apk\` (Bisa langsung diinstall di HP)
+          - **Keystore Backup**: \`upload-keystore.jks\`
           EOF
 
-      - name: Upload Signed Play Store AAB
+      - name: Upload Signed Play Store AAB Bundle
         uses: actions/upload-artifact@v4
         with:
           name: PlayStore-Release-AAB
-          path: release-artifacts/Luach-Hebrew-Calendar-release.aab
+          path: release-artifacts/Kalender-Jawa-v1.0-release.aab
           retention-days: 30
 
       - name: Upload Direct Install APK
         uses: actions/upload-artifact@v4
         with:
           name: DirectInstall-Release-APK
-          path: release-artifacts/Luach-Hebrew-Calendar-release.apk
+          path: release-artifacts/Kalender-Jawa-v1.0-release.apk
           retention-days: 30
 
-      - name: Upload All Release Artifacts & Keystore Backup
+      - name: Upload Complete Release Package & Keystore Backup
         uses: actions/upload-artifact@v4
         with:
-          name: Complete-Release-Package
+          name: Complete-Release-Package-with-Keystore
           path: release-artifacts/
           retention-days: 30

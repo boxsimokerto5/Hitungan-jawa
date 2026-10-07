@@ -589,6 +589,35 @@ fun SettingsScreen(
             }
         }
 
+        // 6. App Version & Package Info Card
+        item {
+            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = KremJawa,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Kalender Jawa • Versi 1.0",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = SoganDark
+                        )
+                        Text(
+                            text = "com.hitunganjawa.gecckocreator",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SoganPrimary,
+                            fontSize = 11.5.sp
+                        )
+                    }
+                }
+            }
+        }
+
         item {
             Spacer(modifier = Modifier.height(28.dp))
         }

@@ -13,7 +13,7 @@ android {
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.hebrewcalendar.gecckocreator"
+    applicationId = "com.hitunganjawa.gecckocreator"
     minSdk = 24
     targetSdk = 36
     versionCode = 1
@@ -28,9 +28,9 @@ android {
       val keystoreFile = file(keystorePath)
       if (keystoreFile.exists()) {
         storeFile = keystoreFile
-        storePassword = System.getenv("STORE_PASSWORD") ?: "android"
+        storePassword = System.getenv("STORE_PASSWORD") ?: "KalenderJawaPass2026!"
         keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("STORE_PASSWORD") ?: "android"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("STORE_PASSWORD") ?: "KalenderJawaPass2026!"
       } else {
         storeFile = file("${rootDir}/debug.keystore")
         storePassword = "android"

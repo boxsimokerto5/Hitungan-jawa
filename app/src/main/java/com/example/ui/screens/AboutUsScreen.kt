@@ -385,10 +385,17 @@ fun AboutUsScreen(
                             color = SoganDark
                         )
                         Text(
-                            text = "${StringResources.get("app_version", language)} 1.0.0 (Release)",
+                            text = "${StringResources.get("app_version", language)} 1.0",
                             style = MaterialTheme.typography.bodySmall,
                             color = SoganPrimary,
                             fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Package: com.hitunganjawa.gecckocreator",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = SoganDark,
+                            fontSize = 11.sp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
