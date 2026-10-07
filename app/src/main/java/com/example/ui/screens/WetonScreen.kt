@@ -154,7 +154,7 @@ fun WetonScreen(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_javanese_calendar_logo_1791373776816),
+                                painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
                                 contentDescription = "App Logo",
                                 modifier = Modifier
                                     .size(38.dp)

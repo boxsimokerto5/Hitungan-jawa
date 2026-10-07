@@ -1,6 +1,7 @@
 package com.example.ui.screens.hitungan
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,10 +60,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.localization.AppLanguage
 import com.example.ui.MainViewModel
 import com.example.ui.theme.KeratonGold
@@ -297,19 +300,13 @@ fun HitunganJawaScreen(
                             color = KeratonGoldContainer
                         )
                     }
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
+                        contentDescription = "Logo Hitungan Jawa",
                         modifier = Modifier
-                            .size(38.dp)
-                            .background(Color.White.copy(alpha = 0.15f), CircleShape)
-                    ) {
-                        Text(
-                            text = "ꦥ",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = KeratonGold
-                        )
-                    }
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
                 }
             }
         }

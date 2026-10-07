@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/ic_javanese_calendar_logo_1791373776816"
+        android:drawable="@drawable/ic_hitungan_jawa_logo_1791383285970"
         android:gravity="center" />
 </layer-list>
