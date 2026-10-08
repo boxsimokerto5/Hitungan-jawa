@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Calculate
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -52,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +66,7 @@ import com.example.localization.AppLanguage
 import com.example.localization.StringResources
 import com.example.ui.MainViewModel
 import com.example.ui.components.AddEditEventDialog
+import com.example.ui.components.JavaneseDatePickerDialog
 import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
@@ -84,6 +90,7 @@ fun PlannerScreen(
     val eventsOnDate by viewModel.eventsOnSelectedDate.collectAsStateWithLifecycle()
     val allUpcomingEvents by viewModel.allUpcomingEvents.collectAsStateWithLifecycle()
 
+    var showDatePicker by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var eventToEdit by remember { mutableStateOf<PlannerEvent?>(null) }
     var showSedaDialog by remember { mutableStateOf(false) }
@@ -136,6 +143,24 @@ fun PlannerScreen(
                         }
                     }
 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onNavigateToCalendar,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.2f))
+                    ) {
+                        Icon(
+                            Icons.Default.CalendarMonth,
+                            contentDescription = "Buka Kalender",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
                     IconButton(
                         onClick = {
                             val nextLang = when (language) {
@@ -159,45 +184,182 @@ fun PlannerScreen(
                         )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
+            // Date Selector Container (Fitur Ganti Tanggal untuk Rencana Kegiatan)
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.12f),
+                border = BorderStroke(1.dp, KeratonGold.copy(alpha = 0.35f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
-                        Text(
-                            text = selectedDate.format(
-                                DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", when (language) {
-                                    AppLanguage.JAVANESE -> Locale("id")
-                                    AppLanguage.INDONESIAN -> Locale("id")
-                                    AppLanguage.ENGLISH -> Locale.ENGLISH
-                                })
-                            ),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                    // Tombol Hari Sebelumnya (<)
+                    IconButton(
+                        onClick = {
+                            viewModel.selectDate(selectedDate.minusDays(1))
+                        },
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.18f))
+                            .testTag("planner_prev_day_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Hari Sebelumnya",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
                         )
+                    }
+
+                    // Tengah: Area Tanggal Terpilih (Dapat diketuk untuk membuka DatePicker)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { showDatePicker = true }
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .testTag("planner_change_date_button"),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = selectedDate.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "EEEE, d MMMM yyyy",
+                                        when (language) {
+                                            AppLanguage.JAVANESE -> Locale("id")
+                                            AppLanguage.INDONESIAN -> Locale("id")
+                                            AppLanguage.ENGLISH -> Locale.ENGLISH
+                                        }
+                                    )
+                                ),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 14.5.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
                         Text(
                             text = "${selectedJavaneseDate.wetonName} (Neptu ${selectedJavaneseDate.neptuTotal}) • ${selectedJavaneseDate.day} ${selectedJavaneseDate.monthNameJv} ${selectedJavaneseDate.yearJavanese} AJ",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = KeratonGold,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+
+                        // Badge Indikator "Ganti Tanggal"
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(
+                                    color = KeratonGoldContainer.copy(alpha = 0.28f),
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarMonth,
+                                contentDescription = null,
+                                tint = KeratonGold,
+                                modifier = Modifier.size(11.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = when (language) {
+                                    AppLanguage.JAVANESE -> "Gantos Tanggal"
+                                    AppLanguage.INDONESIAN -> "Ganti Tanggal"
+                                    AppLanguage.ENGLISH -> "Change Date"
+                                },
+                                color = Color.White,
+                                fontSize = 10.5.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
 
+                    // Tombol Hari Berikutnya (>)
                     IconButton(
-                        onClick = onNavigateToCalendar,
+                        onClick = {
+                            viewModel.selectDate(selectedDate.plusDays(1))
+                        },
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(34.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.25f))
+                            .background(Color.White.copy(alpha = 0.18f))
+                            .testTag("planner_next_day_button")
                     ) {
-                        Icon(Icons.Default.CalendarMonth, contentDescription = "Open Calendar", tint = Color.White)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Hari Berikutnya",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
+            }
+
+            // Tombol Pintas "Kembali ke Hari Ini" jika tanggal dipilih bukan hari ini
+            if (selectedDate != LocalDate.now()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = KeratonGoldContainer,
+                        border = BorderStroke(1.dp, KeratonGold.copy(alpha = 0.6f)),
+                        modifier = Modifier
+                            .clickable { viewModel.goToToday() }
+                            .testTag("planner_today_button")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Today,
+                                contentDescription = null,
+                                tint = SoganDark,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = when (language) {
+                                    AppLanguage.JAVANESE -> "Wangsul dhateng Dinten Niki"
+                                    AppLanguage.INDONESIAN -> "Kembali ke Hari Ini"
+                                    AppLanguage.ENGLISH -> "Return to Today"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = SoganDark,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                }
+            }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -280,12 +442,26 @@ fun PlannerScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = StringResources.get("activities_title", language),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = SoganDark
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = StringResources.get("activities_title", language),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = SoganDark
+                        )
+                        Text(
+                            text = selectedDate.format(
+                                DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", when (language) {
+                                    AppLanguage.JAVANESE -> Locale("id")
+                                    AppLanguage.INDONESIAN -> Locale("id")
+                                    AppLanguage.ENGLISH -> Locale.ENGLISH
+                                })
+                            ) + " (${selectedJavaneseDate.wetonName})",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SoganPrimary,
+                            fontSize = 11.5.sp
+                        )
+                    }
 
                 Surface(
                     shape = RoundedCornerShape(10.dp),
@@ -379,9 +555,32 @@ fun PlannerScreen(
     }
     }
 
+    if (showDatePicker) {
+        JavaneseDatePickerDialog(
+            initialDate = selectedDate,
+            language = language,
+            onDismissRequest = { showDatePicker = false },
+            onDateSelected = { newDate ->
+                viewModel.selectDate(newDate)
+                showDatePicker = false
+            }
+        )
+    }
+
     if (showAddDialog) {
+        val datePattern = when (language) {
+            AppLanguage.JAVANESE -> "EEEE, d MMMM yyyy"
+            AppLanguage.INDONESIAN -> "EEEE, d MMMM yyyy"
+            AppLanguage.ENGLISH -> "EEEE, MMMM d, yyyy"
+        }
+        val locale = when (language) {
+            AppLanguage.JAVANESE -> Locale("id")
+            AppLanguage.INDONESIAN -> Locale("id")
+            AppLanguage.ENGLISH -> Locale.ENGLISH
+        }
+        val formattedDateStr = selectedDate.format(DateTimeFormatter.ofPattern(datePattern, locale))
         AddEditEventDialog(
-            dateLabel = selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE) + " (" + selectedJavaneseDate.wetonName + ")",
+            dateLabel = "$formattedDateStr (${selectedJavaneseDate.wetonName})",
             language = language,
             onDismiss = { showAddDialog = false },
             onSave = { title, desc, time, category, hasReminder ->
