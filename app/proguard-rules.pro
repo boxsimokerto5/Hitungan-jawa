@@ -36,3 +36,9 @@
 -keep class com.yandex.ads.mediation.** { *; }
 -dontwarn com.yandex.mobile.ads.**
 -dontwarn com.yandex.ads.mediation.**
+
+# Google Play In-App Updates SDK
+-keep class com.google.android.play.core.appupdate.** { *; }
+-keep interface com.google.android.play.core.appupdate.** { *; }
+-keep class com.google.android.play.core.install.** { *; }
+

@@ -66,4 +66,11 @@ class ExampleRobolectricTest {
     org.junit.Assert.assertNotNull(metaAdapterClass)
     org.junit.Assert.assertNotNull(yandexAdapterClass)
   }
+
+  @Test
+  fun `verify in-app update manager initialization`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val updateManager = com.example.update.InAppUpdateManager.getInstance(context)
+    org.junit.Assert.assertNotNull(updateManager)
+  }
 }

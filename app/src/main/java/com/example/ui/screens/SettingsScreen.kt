@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -779,6 +780,50 @@ fun SettingsScreen(
                             color = SoganPrimary,
                             fontSize = 11.5.sp
                         )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        val updateManager = com.example.update.InAppUpdateManager.getInstance(context)
+                        val isCheckingUpdate by updateManager.isCheckingUpdate.collectAsStateWithLifecycle()
+
+                        Button(
+                            onClick = {
+                                val activity = context as? android.app.Activity
+                                if (activity != null) {
+                                    updateManager.checkManuallyFromSettings(
+                                        activity = activity,
+                                        onUpdateAvailable = {
+                                            Toast.makeText(context, "Pembaruan resmi ditemukan di Google Play!", Toast.LENGTH_SHORT).show()
+                                        },
+                                        onAlreadyLatest = {
+                                            Toast.makeText(context, "Aplikasi sudah menggunakan versi terbaru (v1.0).", Toast.LENGTH_LONG).show()
+                                        },
+                                        onErrorOrDevBuild = { _ ->
+                                            updateManager.openPlayStorePage(context)
+                                        }
+                                    )
+                                } else {
+                                    updateManager.openPlayStorePage(context)
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SoganPrimary),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.SystemUpdate,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isCheckingUpdate) "Memeriksa Google Play..." else "Periksa Pembaruan Play Store",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
             }

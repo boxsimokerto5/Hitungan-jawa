@@ -132,6 +132,7 @@ dependencies {
   implementation(libs.retrofit)
   // IronSource Mediation Core & Bidding Adapters (Meta & Yandex)
   implementation("com.ironsource.sdk:mediationsdk:8.6.0")
+  implementation("com.google.android.play:app-update-ktx:2.1.0")
   implementation("com.google.android.gms:play-services-appset:16.0.2")
   implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
   implementation("com.ironsource.adapters:facebookadapter:5.0.0")
