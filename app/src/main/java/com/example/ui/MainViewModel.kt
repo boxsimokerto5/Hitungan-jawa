@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 enum class JavaneseHolidayFilterTab {
@@ -153,6 +154,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             _viewMonth.value -= 1
         }
+    }
+
+    fun setViewYearMonth(year: Int, month: Int) {
+        val clampedYear = year.coerceIn(1900, 2100)
+        val clampedMonth = month.coerceIn(1, 12)
+        _viewYear.value = clampedYear
+        _viewMonth.value = clampedMonth
+        val maxDays = YearMonth.of(clampedYear, clampedMonth).lengthOfMonth()
+        val currentDay = _selectedDate.value.dayOfMonth.coerceAtMost(maxDays)
+        _selectedDate.value = LocalDate.of(clampedYear, clampedMonth, currentDay)
+    }
+
+    fun nextYear() {
+        val newYear = (_viewYear.value + 1).coerceAtMost(2100)
+        _viewYear.value = newYear
+        val maxDays = YearMonth.of(newYear, _viewMonth.value).lengthOfMonth()
+        val currentDay = _selectedDate.value.dayOfMonth.coerceAtMost(maxDays)
+        _selectedDate.value = LocalDate.of(newYear, _viewMonth.value, currentDay)
+    }
+
+    fun prevYear() {
+        val newYear = (_viewYear.value - 1).coerceAtLeast(1900)
+        _viewYear.value = newYear
+        val maxDays = YearMonth.of(newYear, _viewMonth.value).lengthOfMonth()
+        val currentDay = _selectedDate.value.dayOfMonth.coerceAtMost(maxDays)
+        _selectedDate.value = LocalDate.of(newYear, _viewMonth.value, currentDay)
     }
 
     fun goToToday() {

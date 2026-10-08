@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -35,6 +37,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.filled.WbSunny
@@ -79,12 +83,15 @@ import com.example.ui.MainViewModel
 import com.example.ui.components.AddEditEventDialog
 import com.example.ui.components.HolidayDetailDialog
 import com.example.ui.components.JavaneseDatePickerDialog
+import com.example.ui.components.MonthYearPickerDialog
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
 import com.example.ui.theme.KremJawa
+import com.example.ui.theme.KremSurface
 import com.example.ui.theme.SoganDark
 import com.example.ui.theme.SoganLight
+import com.example.ui.theme.SoganMedium
 import com.example.ui.theme.SoganPrimary
 import java.time.LocalDate
 import java.time.YearMonth
@@ -109,6 +116,7 @@ fun CalendarScreen(
 
     var showAddEventDialog by remember { mutableStateOf(false) }
     var showDatePickerDialog by remember { mutableStateOf(false) }
+    var showMonthYearPickerDialog by remember { mutableStateOf(false) }
     var holidayToShowDetail by remember { mutableStateOf<JavaneseHoliday?>(null) }
     var holidayInstanceDetail by remember { mutableStateOf<JavaneseHolidayInstance?>(null) }
     var showHintBanner by remember { mutableStateOf(true) }
@@ -463,10 +471,13 @@ fun CalendarScreen(
 
         // 3. MONTH & YEAR NAVIGATION HEADER
         item {
+            val today = remember { LocalDate.now() }
+            val isNotCurrentMonth = viewYear != today.year || viewMonth != today.monthValue
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
@@ -474,54 +485,150 @@ fun CalendarScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { viewModel.prevMonth() },
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("prev_month_btn")
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Previous Month",
-                            tint = SoganDark
-                        )
+                    // Left controls: Prev Year (<<) & Prev Month (<)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { viewModel.prevYear() },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("prev_year_btn")
+                        ) {
+                            Icon(
+                                Icons.Default.KeyboardDoubleArrowLeft,
+                                contentDescription = "Tahun Sadurunge / Tahun Sebelumnya",
+                                tint = SoganMedium,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.prevMonth() },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("prev_month_btn")
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Bulan Sadurunge / Bulan Sebelumnya",
+                                tint = SoganDark,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = currentYearMonth.month.getDisplayName(
-                                TextStyle.FULL,
-                                when (language) {
-                                    AppLanguage.JAVANESE -> Locale("id")
-                                    AppLanguage.INDONESIAN -> Locale("id")
-                                    AppLanguage.ENGLISH -> Locale.ENGLISH
-                                }
-                            ).uppercase() + " $viewYear",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = SoganDark,
-                            letterSpacing = 1.sp
-                        )
+                    // Center: Clickable Month & Year Header Surface
+                    Surface(
+                        onClick = { showMonthYearPickerDialog = true },
+                        shape = RoundedCornerShape(12.dp),
+                        color = KremSurface,
+                        border = BorderStroke(1.dp, KeratonGold.copy(alpha = 0.5f)),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.testTag("month_year_selector_header")
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = currentYearMonth.month.getDisplayName(
+                                        TextStyle.FULL,
+                                        when (language) {
+                                            AppLanguage.JAVANESE -> Locale("id")
+                                            AppLanguage.INDONESIAN -> Locale("id")
+                                            AppLanguage.ENGLISH -> Locale.ENGLISH
+                                        }
+                                    ).uppercase() + " $viewYear",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = SoganDark,
+                                    letterSpacing = 0.5.sp
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = "Pilih Tahun & Bulan",
+                                    tint = SoganDark,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
 
-                        Text(
-                            text = javaneseMonthHeader,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF6D4C41)
-                        )
+                            Text(
+                                text = javaneseMonthHeader,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF6D4C41),
+                                fontSize = 11.sp
+                            )
+                        }
                     }
 
-                    IconButton(
-                        onClick = { viewModel.nextMonth() },
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("next_month_btn")
+                    // Right controls: Next Month (>) & Next Year (>>)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { viewModel.nextMonth() },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("next_month_btn")
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Bulan Sabanjure / Bulan Berikutnya",
+                                tint = SoganDark,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.nextYear() },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("next_year_btn")
+                        ) {
+                            Icon(
+                                Icons.Default.KeyboardDoubleArrowRight,
+                                contentDescription = "Tahun Sabanjure / Tahun Berikutnya",
+                                tint = SoganMedium,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Quick indicator & shortcut back to current month if navigating distant dates
+                if (isNotCurrentMonth) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Surface(
+                        onClick = { viewModel.goToToday() },
+                        shape = RoundedCornerShape(16.dp),
+                        color = KeratonGoldContainer,
+                        border = BorderStroke(1.dp, KeratonGold.copy(alpha = 0.6f)),
+                        modifier = Modifier.testTag("jump_to_current_month_chip")
                     ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Next Month",
-                            tint = SoganDark
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Today,
+                                contentDescription = null,
+                                tint = SoganDark,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = when (language) {
+                                    AppLanguage.JAVANESE -> "Bali menyang Dina Iki"
+                                    AppLanguage.INDONESIAN -> "Kembali ke Hari Ini"
+                                    AppLanguage.ENGLISH -> "Back to Today"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = SoganDark,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.5.sp
+                            )
+                        }
                     }
                 }
             }
@@ -1085,6 +1192,19 @@ fun CalendarScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+    }
+
+    if (showMonthYearPickerDialog) {
+        MonthYearPickerDialog(
+            initialYear = viewYear,
+            initialMonth = viewMonth,
+            language = language,
+            onDismissRequest = { showMonthYearPickerDialog = false },
+            onConfirm = { year, month ->
+                viewModel.setViewYearMonth(year, month)
+                showMonthYearPickerDialog = false
+            }
+        )
     }
 
     if (showDatePickerDialog) {
