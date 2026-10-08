@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -69,12 +70,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.R
 import com.example.data.usada.UsadaCategory
 import com.example.data.usada.UsadaDataRepository
 import com.example.data.usada.UsadaHerbInfo
@@ -159,26 +162,14 @@ fun UsadaScreen(
                     modifier = Modifier.weight(1f, fill = false),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Traditional Herbal Icon Badge
-                    Box(
+                    // App Logo Badge
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_semar_hitungan_jawa_1791452830769),
+                        contentDescription = "App Logo",
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.radialGradient(
-                                    listOf(KeratonGold, SoganPrimary)
-                                )
-                            )
-                            .border(1.5.dp, KeratonGoldLight, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Spa,
-                            contentDescription = null,
-                            tint = Color(0xFF26140D),
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
 
                     Spacer(modifier = Modifier.width(10.dp))
 

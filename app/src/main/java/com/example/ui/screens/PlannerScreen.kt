@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,12 +55,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.R
 import com.example.calendar.JavaneseCalendarEngine
 import com.example.data.PlannerEvent
 import com.example.localization.AppLanguage
@@ -110,20 +113,13 @@ fun PlannerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_semar_hitungan_jawa_1791452830769),
+                            contentDescription = "App Logo",
                             modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(KeratonGoldContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.EventNote,
-                                contentDescription = null,
-                                tint = SoganDark,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(

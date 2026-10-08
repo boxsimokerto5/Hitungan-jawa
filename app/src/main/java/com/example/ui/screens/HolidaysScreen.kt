@@ -131,7 +131,7 @@ fun HolidaysScreen(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
+                                painter = painterResource(id = R.drawable.ic_semar_hitungan_jawa_1791452830769),
                                 contentDescription = "App Logo",
                                 modifier = Modifier
                                     .size(38.dp)
