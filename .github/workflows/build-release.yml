@@ -2,7 +2,8 @@ name: Build & Sign Android APK & AAB (Play Store Ready)
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "**" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
@@ -130,7 +131,7 @@ jobs:
           STORE_PASSWORD: ${{ env.STORE_PASSWORD }}
           KEY_PASSWORD: ${{ env.KEY_PASSWORD }}
           KEY_ALIAS: ${{ env.KEY_ALIAS }}
-        run: ./gradlew assembleRelease --stacktrace
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
 
       - name: Build Signed Release AAB (Android App Bundle for Google Play)
         env:
@@ -138,7 +139,7 @@ jobs:
           STORE_PASSWORD: ${{ env.STORE_PASSWORD }}
           KEY_PASSWORD: ${{ env.KEY_PASSWORD }}
           KEY_ALIAS: ${{ env.KEY_ALIAS }}
-        run: ./gradlew bundleRelease --stacktrace
+        run: ./gradlew bundleRelease --stacktrace --no-daemon
 
       - name: Package Output Artifacts & Generate Release Documentation
         run: |
