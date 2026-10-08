@@ -32,6 +32,12 @@
         <receiver
             android:name=".notification.NotificationReceiver"
             android:exported="false" />
+
+        <!-- Matikan auto-initializer Yandex agar logging diagnostik validator tidak berjalan saat start aplikasi -->
+        <provider
+            android:name="com.yandex.mobile.ads.core.initializer.MobileAdsInitializeProvider"
+            android:authorities="${applicationId}.MobileAdsInitializeProvider"
+            tools:node="remove" />
     </application>
 
 </manifest>
