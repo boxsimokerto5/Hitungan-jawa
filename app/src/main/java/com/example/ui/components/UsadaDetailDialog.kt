@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,12 +34,15 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -54,8 +58,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.example.data.usada.UsadaRecipe
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
@@ -64,8 +66,10 @@ import com.example.ui.theme.KeratonGoldDark
 import com.example.ui.theme.KeratonGoldLight
 import com.example.ui.theme.KremJawa
 import com.example.ui.theme.SoganDark
+import com.example.ui.theme.SoganMedium
 import com.example.ui.theme.SoganPrimary
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsadaDetailDialog(
     recipe: UsadaRecipe,
@@ -75,41 +79,53 @@ fun UsadaDetailDialog(
 ) {
     val context = LocalContext.current
     val checkedIngredients = remember { mutableStateMapOf<Int, Boolean>() }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false
+    )
 
-    Dialog(
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .padding(vertical = 16.dp)
-                .testTag("usada_detail_dialog"),
-            shape = RoundedCornerShape(22.dp),
-            color = Color.White,
-            tonalElevation = 8.dp,
-            shadowElevation = 12.dp
-        ) {
+        sheetState = sheetState,
+        dragHandle = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .padding(top = 10.dp, bottom = 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 1. DIALOG HEADER (Royal Sogan & Batik Theme)
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0xFF26140D),
-                                    SoganDark,
-                                    SoganPrimary
-                                )
+                        .size(width = 46.dp, height = 5.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(SoganMedium.copy(alpha = 0.35f))
+                )
+            }
+        },
+        containerColor = KremJawa,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .testTag("usada_detail_dialog")
+        ) {
+            // 1. DIALOG HEADER (Royal Sogan & Batik Theme)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF26140D),
+                                SoganDark,
+                                SoganPrimary
                             )
                         )
-                        .padding(horizontal = 20.dp, vertical = 18.dp)
-                ) {
+                    )
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
+            ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         // Top bar inside header: Category badge, method, & actions
                         Row(
@@ -678,7 +694,6 @@ fun UsadaDetailDialog(
                 }
             }
         }
-    }
 }
 
 /**

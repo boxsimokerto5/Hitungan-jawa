@@ -141,21 +141,24 @@ fun UsadaScreen(
             .background(KremJawa)
             .testTag("usada_screen")
     ) {
-        // 1. SOGAN & KERATON GOLD TOP BANNER (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
+        // 1. SOGAN & KERATON GOLD TOP BANNER (RAMPING, ELEGAN & TIDAK TERLALU LEBAR KE BAWAH)
         JavaneseHeaderBanner(
-            contentPaddingBottom = 12.dp
+            contentPaddingBottom = 8.dp
         ) {
-            // Header Top Row
+            // Header Row: Icon, Title, and Compact Counter Badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.weight(1f, fill = false),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     // Traditional Herbal Icon Badge
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
+                            .size(36.dp)
                             .clip(CircleShape)
                             .background(
                                 Brush.radialGradient(
@@ -169,7 +172,7 @@ fun UsadaScreen(
                             imageVector = Icons.Default.Spa,
                             contentDescription = null,
                             tint = Color(0xFF26140D),
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(19.dp)
                         )
                     }
 
@@ -183,67 +186,43 @@ fun UsadaScreen(
                                 else -> "Usada & Jamu Tradisional"
                             },
                             color = Color.White,
-                            fontSize = 18.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = when (language) {
-                                AppLanguage.JAVANESE -> "Serat Primbon • Tamba & Racikan Leluhur"
+                                AppLanguage.JAVANESE -> "Primbon Usada • Tamba & Racikan"
                                 AppLanguage.ENGLISH -> "Ancient Herbal Healing Wisdom"
-                                else -> "Serat Primbon • Warisan Ramuan Herbal"
+                                else -> "Primbon Usada • Warisan Herbal"
                             },
                             color = KeratonGoldLight,
-                            fontSize = 11.5.sp,
-                            fontStyle = FontStyle.Italic
+                            fontSize = 11.sp,
+                            fontStyle = FontStyle.Italic,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
-                // Heritage Tag
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Compact Badge (No vertical stretching)
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     color = Color.White.copy(alpha = 0.15f),
                     border = androidx.compose.foundation.BorderStroke(1.dp, KeratonGold.copy(alpha = 0.5f))
                 ) {
                     Text(
-                        text = "Primbon Usada",
+                        text = "${UsadaDataRepository.recipes.size} Ramuan",
                         color = KeratonGoldLight,
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Quick Stats Row (18 Ramuan, 7 Kategori, 15 Tanaman, Favorit)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                HeaderStatBox(
-                    label = "Ramuan",
-                    value = "${UsadaDataRepository.recipes.size}",
-                    modifier = Modifier.weight(1f)
-                )
-                HeaderStatBox(
-                    label = "Kategori",
-                    value = "${UsadaDataRepository.categories.size}",
-                    modifier = Modifier.weight(1f)
-                )
-                HeaderStatBox(
-                    label = "Tanaman",
-                    value = "${UsadaDataRepository.herbsGlossary.size}",
-                    modifier = Modifier.weight(1f)
-                )
-                HeaderStatBox(
-                    label = "Favorit",
-                    value = "${favoriteIds.size}",
-                    isHighlighted = favoriteIds.isNotEmpty(),
-                    modifier = Modifier.weight(1f)
-                )
             }
         }
 
@@ -334,41 +313,6 @@ fun UsadaScreen(
         } else {
             // TAB 2: KAMUS RIMPANG & TANAMAN HERBAL JAWA
             HerbGlossaryContent()
-        }
-    }
-}
-
-/**
- * Quick Header Stat Box
- */
-@Composable
-private fun HeaderStatBox(
-    label: String,
-    value: String,
-    isHighlighted: Boolean = false,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        color = if (isHighlighted) Color(0xFFFFF8E1).copy(alpha = 0.22f) else Color.White.copy(alpha = 0.12f),
-        border = if (isHighlighted) androidx.compose.foundation.BorderStroke(1.dp, KeratonGold) else null
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = value,
-                color = if (isHighlighted) KeratonGoldLight else Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = label,
-                color = Color.White.copy(alpha = 0.8f),
-                fontSize = 10.sp
-            )
         }
     }
 }
