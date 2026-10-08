@@ -31,6 +31,8 @@
 -keep class com.facebook.ads.** { *; }
 -dontwarn com.facebook.ads.**
 
-# Yandex Mobile Ads Adapter
+# Yandex Mobile Ads Adapter & Mediation
 -keep class com.yandex.mobile.ads.** { *; }
+-keep class com.yandex.ads.mediation.** { *; }
 -dontwarn com.yandex.mobile.ads.**
+-dontwarn com.yandex.ads.mediation.**

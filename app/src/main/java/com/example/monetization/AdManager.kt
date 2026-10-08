@@ -85,6 +85,13 @@ object AdManager {
         if (isInitialized) return
 
         try {
+            // Nonaktifkan logging diagnostik internal Yandex agar tidak memenuhi logcat
+            com.yandex.mobile.ads.common.MobileAds.enableLogging(false)
+            com.yandex.mobile.ads.common.MobileAds.enableDebugErrorIndicator(false)
+            com.yandex.mobile.ads.common.MobileAds.initialize(activity) {}
+        } catch (_: Throwable) {}
+
+        try {
             IronSource.init(activity, appKey, object : InitializationListener {
                 override fun onInitializationComplete() {
                     isInitialized = true
