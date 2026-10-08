@@ -35,8 +35,10 @@ import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Nightlight
+import androidx.compose.material.icons.filled.OndemandVideo
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Refresh
@@ -77,11 +79,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.app.Activity
 import com.example.R
 import com.example.calendar.JodohPetunganResult
 import com.example.calendar.WetonKelahiran
 import com.example.localization.AppLanguage
 import com.example.localization.StringResources
+import com.example.monetization.AdManager
+import com.example.monetization.NativeAdCard
+import com.example.monetization.RewardedAdUnlockDialog
 import com.example.ui.MainViewModel
 import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
@@ -117,6 +123,9 @@ fun WetonScreen(
     var pickerInitialDate by remember { mutableStateOf(birthDate) }
     var pickerTitle by remember { mutableStateOf("Pilih Tanggal Lahir") }
     var onDateConfirmed by remember { mutableStateOf<(LocalDate) -> Unit>({}) }
+
+    var isPrimbonUnlocked by remember { mutableStateOf(false) }
+    var showRewardedUnlockDialog by remember { mutableStateOf(false) }
 
     fun openDatePicker(initial: LocalDate, titleText: String, onSelect: (LocalDate) -> Unit) {
         pickerInitialDate = initial
@@ -823,6 +832,105 @@ fun WetonScreen(
                 }
             }
 
+            // REWARDED AD OPT-IN: BUKA PRIMBON KHUSUS MENDALAM
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .testTag("rewarded_primbon_card"),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, KeratonGold),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(KeratonGoldContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = SoganDark,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Primbon Khusus: Petung Rejeki & Arah Kejayaan",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SoganDark
+                                )
+                                Text(
+                                    text = "Buka petuah arah rejeki dan hari slamet weton Anda",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF78909C),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        if (isPrimbonUnlocked) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = "🔓 Analisis Primbon Lengkap Terbuka:",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF2E7D32)
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = "• Arah Rejeki: Disarankan menghadap atau melangkah ke arah ${wetonResult.nagaDinaArah} saat memulai niat atau usaha pokok.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = SoganDark,
+                                        lineHeight = 17.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "• Dina Slamet: Rawat ketentraman batin dengan bersedekah pada hari weton kelahiran (${wetonResult.wetonName}) sebagai benteng tolak bala dan penyucian diri.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF5D4037),
+                                        lineHeight = 17.sp
+                                    )
+                                }
+                            }
+                        } else {
+                            Button(
+                                onClick = { showRewardedUnlockDialog = true },
+                                colors = ButtonDefaults.buttonColors(containerColor = SoganPrimary),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("unlock_primbon_rewarded_btn")
+                            ) {
+                                Icon(Icons.Default.OndemandVideo, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Tonton Video Singkat untuk Membuka", fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // NATIVE AD: DISERTAKAN NATURAL DI ANTARA INFORMASI WETON
+            item {
+                NativeAdCard()
+            }
+
             // 7. SIKLUS WETONAN / SELAPANAN (35 HARI) & UMUR LENGKAP
             item {
                 Card(
@@ -976,6 +1084,33 @@ fun WetonScreen(
                 onDateConfirmed(selected)
                 showDatePickerDialog = false
             }
+        )
+    }
+
+    if (showRewardedUnlockDialog) {
+        val currentActivity = context as? Activity
+        RewardedAdUnlockDialog(
+            title = "Buka Primbon Rejeki & Hari Slamet",
+            description = "Tonton video singkat untuk membuka analisis rahasia arah rejeki dan pitutur keselamatan weton Anda.",
+            onWatchAd = {
+                showRewardedUnlockDialog = false
+                if (currentActivity != null) {
+                    AdManager.showRewardedAd(
+                        activity = currentActivity,
+                        onRewarded = {
+                            isPrimbonUnlocked = true
+                            Toast.makeText(context, "Analisis Primbon Berhasil Terbuka!", Toast.LENGTH_SHORT).show()
+                        },
+                        onUnavailable = {
+                            isPrimbonUnlocked = true
+                            Toast.makeText(context, "Analisis Primbon Terbuka!", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    isPrimbonUnlocked = true
+                }
+            },
+            onDismiss = { showRewardedUnlockDialog = false }
         )
     }
 }

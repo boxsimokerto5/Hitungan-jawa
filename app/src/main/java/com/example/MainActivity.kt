@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.example.monetization.AdManager
 import com.example.ui.HomeScreen
 import com.example.ui.MainViewModel
 import com.example.ui.theme.MyApplicationTheme
@@ -20,6 +21,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AdManager.initialize(this)
+
         // Opsi A: Force dark status bar style so icons (clock, battery, wifi, notifications) are crisp WHITE on dark batik banner
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -40,5 +43,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AdManager.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AdManager.onPause(this)
     }
 }

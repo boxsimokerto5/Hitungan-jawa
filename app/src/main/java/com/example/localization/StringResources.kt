@@ -406,6 +406,26 @@ object StringResources {
             AppLanguage.JAVANESE to "Cek Weton Kelahiran",
             AppLanguage.INDONESIAN to "Cek Weton Kelahiran",
             AppLanguage.ENGLISH to "Inspect Birth Weton"
+        ),
+        "share_app" to mapOf(
+            AppLanguage.JAVANESE to "Bagekake / Kirim Aplikasi",
+            AppLanguage.INDONESIAN to "Bagikan / Kirim Aplikasi",
+            AppLanguage.ENGLISH to "Share Application"
+        ),
+        "share_app_desc" to mapOf(
+            AppLanguage.JAVANESE to "Ajak kulawarga lan kanca ngundhuh aplikasi Hitungan JAWA",
+            AppLanguage.INDONESIAN to "Ajak keluarga & kerabat menginstal aplikasi Hitungan JAWA",
+            AppLanguage.ENGLISH to "Invite family & friends to install Hitungan JAWA"
+        ),
+        "rate_app" to mapOf(
+            AppLanguage.JAVANESE to "Beri Rating & Ulasan",
+            AppLanguage.INDONESIAN to "Beri Rating & Ulasan",
+            AppLanguage.ENGLISH to "Rate & Review on Play Store"
+        ),
+        "rate_app_desc" to mapOf(
+            AppLanguage.JAVANESE to "Bantu panyengkuyung aplikasi kanthi paring bintang 5 ing Play Store",
+            AppLanguage.INDONESIAN to "Dukung pengembangan aplikasi dengan memberikan bintang 5 di Play Store",
+            AppLanguage.ENGLISH to "Support app development by leaving 5 stars on Play Store"
         )
     )
 }

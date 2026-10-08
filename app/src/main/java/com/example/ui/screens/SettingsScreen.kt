@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -30,6 +33,8 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -87,6 +92,38 @@ fun SettingsScreen(
             Toast.makeText(context, "Izin notifikasi diaktifkan!", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Izin notifikasi ditolak.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val appPackageName = context.packageName
+
+    val onShareApp = {
+        val shareMessage = when (language) {
+            AppLanguage.JAVANESE ->
+                "Mangga sesarengan nguri-uri kabudayan Jawa! Sumangga dipun-undhuh saha dipun-instal aplikasi Hitungan JAWA - Almanak & Kalender Jawa jangkep kaliyan Weton, Neptu, Pawukon, Pranata Mangsa, lan Petungan Adat.\n\nKlik pranala punika kagem nginstal langsung saking Google Play Store:\nhttps://play.google.com/store/apps/details?id=$appPackageName"
+            AppLanguage.INDONESIAN ->
+                "Yuk lestarikan tradisi & budaya Jawa! Ayo unduh dan instal aplikasi Hitungan JAWA - Kalender & Almanak Jawa lengkap dengan Weton, Neptu, Pawukon, Pranata Mangsa, dan Perhitungan Adat Jawa.\n\nKlik link berikut untuk menginstal langsung dari Google Play Store:\nhttps://play.google.com/store/apps/details?id=$appPackageName"
+            AppLanguage.ENGLISH ->
+                "Discover and preserve Javanese cultural heritage! Download and install the Hitungan JAWA app - Complete Javanese Calendar, Weton, Neptu, Pawukon & Traditional Calculations.\n\nInstall directly from the Google Play Store:\nhttps://play.google.com/store/apps/details?id=$appPackageName"
+        }
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Aplikasi Hitungan JAWA")
+            putExtra(Intent.EXTRA_TEXT, shareMessage)
+        }
+        val chooserIntent = Intent.createChooser(sendIntent, StringResources.get("share_app", language))
+        context.startActivity(chooserIntent)
+    }
+
+    val onRateApp = {
+        try {
+            val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+            }
+            context.startActivity(marketIntent)
+        } catch (e: ActivityNotFoundException) {
+            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
+            context.startActivity(webIntent)
         }
     }
 
@@ -584,7 +621,137 @@ fun SettingsScreen(
             }
         }
 
-        // 6. App Version & Package Info Card
+        // 6. Share / Kirim Aplikasi Card Row
+        item {
+            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onShareApp() }
+                        .testTag("settings_share_app_row")
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(KeratonGoldContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Share,
+                                    contentDescription = null,
+                                    tint = SoganDark,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = StringResources.get("share_app", language),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SoganDark
+                                )
+                                Text(
+                                    text = StringResources.get("share_app_desc", language),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF78909C),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = SoganPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // 7. Beri Rating Aplikasi Card Row
+        item {
+            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onRateApp() }
+                        .testTag("settings_rate_app_row")
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(KeratonGoldContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = Color(0xFFF57F17),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = StringResources.get("rate_app", language),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SoganDark
+                                )
+                                Text(
+                                    text = StringResources.get("rate_app_desc", language),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF78909C),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = SoganPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // 8. App Version & Package Info Card
         item {
             Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Surface(

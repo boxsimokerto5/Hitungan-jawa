@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,6 +62,8 @@ import com.example.calendar.JavaneseHolidayCategory
 import com.example.calendar.JavaneseHolidayInstance
 import com.example.localization.AppLanguage
 import com.example.localization.StringResources
+import com.example.monetization.BannerAdView
+import com.example.monetization.NativeAdCard
 import com.example.ui.JavaneseHolidayFilterTab
 import com.example.ui.MainViewModel
 import com.example.ui.components.HolidayDetailDialog
@@ -367,7 +370,12 @@ fun HolidaysScreen(
         }
 
         // List of holidays & traditions
-        items(filteredList) { instance ->
+        itemsIndexed(filteredList) { index, instance ->
+            if (index == 3) {
+                NativeAdCard()
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+
             val holiday = instance.holiday
             val daysUntil = ChronoUnit.DAYS.between(today, instance.gregorianDate)
 
@@ -513,6 +521,9 @@ fun HolidaysScreen(
             }
         }
     }
+
+    // Banner Ad docked at bottom of HolidaysScreen
+    BannerAdView(modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
     }
 
     holidayToShowDetail?.let { holiday ->

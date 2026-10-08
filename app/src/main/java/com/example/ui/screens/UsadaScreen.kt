@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,6 +81,8 @@ import com.example.data.usada.UsadaHerbInfo
 import com.example.data.usada.UsadaMethod
 import com.example.data.usada.UsadaRecipe
 import com.example.localization.AppLanguage
+import com.example.monetization.BannerAdView
+import com.example.monetization.NativeAdCard
 import com.example.ui.MainViewModel
 import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.components.UsadaDetailDialog
@@ -314,6 +317,9 @@ fun UsadaScreen(
             // TAB 2: KAMUS RIMPANG & TANAMAN HERBAL JAWA
             HerbGlossaryContent()
         }
+
+        // Banner Ad docked at bottom of UsadaScreen
+        BannerAdView(modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
     }
 }
 
@@ -606,7 +612,11 @@ private fun RecipesContent(
             }
         } else {
             // Recipe Cards
-            items(filteredRecipes, key = { it.id }) { recipe ->
+            itemsIndexed(filteredRecipes, key = { _, it -> it.id }) { index, recipe ->
+                if (index == 3) {
+                    NativeAdCard()
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
                 RecipeItemCard(
                     recipe = recipe,
                     isFavorite = favoriteIds.contains(recipe.id),

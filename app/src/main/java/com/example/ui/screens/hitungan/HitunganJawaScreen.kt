@@ -60,14 +60,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.app.Activity
 import com.example.R
 import com.example.localization.AppLanguage
+import com.example.monetization.AdManager
 import com.example.ui.MainViewModel
 import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.KeratonGold
@@ -393,31 +396,39 @@ fun HitunganJawaScreen(
         }
     }
 
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val dismissModalWithAdCheck: () -> Unit = {
+        activeModalType = null
+        activity?.let { AdManager.showInterstitialAfterAction(it) }
+    }
+
     // Modal Bottom Sheet when card is clicked
     if (activeModalType != null) {
         ModalBottomSheet(
-            onDismissRequest = { activeModalType = null },
+            onDismissRequest = { dismissModalWithAdCheck() },
             sheetState = sheetState,
             containerColor = Color.White,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             when (activeModalType) {
-                HitunganType.MAPATI_4_BULAN -> MapatiSheet(onDismiss = { activeModalType = null })
-                HitunganType.MITONI_7_BULAN -> MitoniSheet(onDismiss = { activeModalType = null })
-                HitunganType.HPL_JAWA -> HplJawaSheet(onDismiss = { activeModalType = null })
-                HitunganType.SEPASAR_5_HARI -> SepasarSheet(onDismiss = { activeModalType = null })
-                HitunganType.SELAPANAN_35_HARI -> SelapananSheet(onDismiss = { activeModalType = null })
-                HitunganType.TEDHAK_SITEN -> TedhakSitenSheet(onDismiss = { activeModalType = null })
-                HitunganType.MENDHEM_ARI_ARI -> MendhemAriAriSheet(onDismiss = { activeModalType = null })
-                HitunganType.WATAK_KARAKTER_BAYI -> WatakBayiSheet(onDismiss = { activeModalType = null })
-                HitunganType.REKOMENDASI_NAMA_JAWA -> NamaJawaSheet(onDismiss = { activeModalType = null })
-                HitunganType.KECOCOKAN_JODOH -> KecocokanJodohDetailedSheet(onDismiss = { activeModalType = null })
-                HitunganType.HARI_BAIK_NIKAH -> HariBaikNikahSheet(onDismiss = { activeModalType = null })
-                HitunganType.ARAH_REZEKI_PASANGAN -> ArahRezekiPasanganSheet(onDismiss = { activeModalType = null })
-                HitunganType.SELAMETAN_KEMATIAN -> SlametanKematianSheet(onDismiss = { activeModalType = null })
-                HitunganType.PINDAH_RUMAH -> PindahRumahSheet(onDismiss = { activeModalType = null })
-                HitunganType.BUKA_USAHA -> BukaUsahaSheet(onDismiss = { activeModalType = null })
-                HitunganType.NAGA_DINA -> NagaDinaSheet(onDismiss = { activeModalType = null })
+                HitunganType.MAPATI_4_BULAN -> MapatiSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.MITONI_7_BULAN -> MitoniSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.HPL_JAWA -> HplJawaSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.SEPASAR_5_HARI -> SepasarSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.SELAPANAN_35_HARI -> SelapananSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.TEDHAK_SITEN -> TedhakSitenSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.MENDHEM_ARI_ARI -> MendhemAriAriSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.WATAK_KARAKTER_BAYI -> WatakBayiSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.REKOMENDASI_NAMA_JAWA -> NamaJawaSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.KECOCOKAN_JODOH -> KecocokanJodohDetailedSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.HARI_BAIK_NIKAH -> HariBaikNikahSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.ARAH_REZEKI_PASANGAN -> ArahRezekiPasanganSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.SELAMETAN_KEMATIAN -> SlametanKematianSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.PINDAH_RUMAH -> PindahRumahSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.BUKA_USAHA -> BukaUsahaSheet(onDismiss = dismissModalWithAdCheck)
+                HitunganType.NAGA_DINA -> NagaDinaSheet(onDismiss = dismissModalWithAdCheck)
                 null -> {}
             }
         }

@@ -35,4 +35,15 @@ class ExampleRobolectricTest {
     assertEquals(27, jvDate.wukuNumber)
     assertEquals(1960, jvDate.yearJavanese)
   }
+
+  @Test
+  fun `verify app package name and share strings`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    assertEquals("com.hitunganjawa.gecckocreator", context.packageName)
+
+    val shareTitle = com.example.localization.StringResources.get("share_app", com.example.localization.AppLanguage.INDONESIAN)
+    val rateTitle = com.example.localization.StringResources.get("rate_app", com.example.localization.AppLanguage.INDONESIAN)
+    assertEquals("Bagikan / Kirim Aplikasi", shareTitle)
+    assertEquals("Beri Rating & Ulasan", rateTitle)
+  }
 }

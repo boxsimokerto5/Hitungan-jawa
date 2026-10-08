@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +36,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.app.Activity
 import com.example.localization.StringResources
+import com.example.monetization.AdManager
 import com.example.ui.screens.AboutUsScreen
 import com.example.ui.screens.CalendarScreen
 import com.example.ui.screens.HolidaysScreen
@@ -59,9 +62,20 @@ fun HomeScreen(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     val language by viewModel.currentLanguage.collectAsStateWithLifecycle()
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var activeSubScreen by rememberSaveable { mutableStateOf(SubScreen.NONE) }
+
+    fun navigateToTab(tabIndex: Int) {
+        if (selectedTab != tabIndex || activeSubScreen != SubScreen.NONE) {
+            selectedTab = tabIndex
+            activeSubScreen = SubScreen.NONE
+            activity?.let { AdManager.recordScreenTransition(it) }
+        }
+    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Scaffold(
@@ -75,10 +89,7 @@ fun HomeScreen(
                 ) {
                     NavigationBarItem(
                         selected = selectedTab == 0 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 0
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(0) },
                         icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
                         label = {
                             Text(
@@ -101,10 +112,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = selectedTab == 1 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 1
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(1) },
                         icon = { Icon(Icons.Default.AutoAwesome, contentDescription = null) },
                         label = {
                             Text(
@@ -127,10 +135,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = selectedTab == 2 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 2
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(2) },
                         icon = { Icon(Icons.Default.Calculate, contentDescription = null) },
                         label = {
                             Text(
@@ -153,10 +158,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = selectedTab == 3 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 3
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(3) },
                         icon = { Icon(Icons.Default.Spa, contentDescription = null) },
                         label = {
                             Text(
@@ -179,10 +181,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = selectedTab == 4 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 4
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(4) },
                         icon = { Icon(Icons.Default.Celebration, contentDescription = null) },
                         label = {
                             Text(
@@ -205,10 +204,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = selectedTab == 5 && activeSubScreen == SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 5
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(5) },
                         icon = { Icon(Icons.Default.EventNote, contentDescription = null) },
                         label = {
                             Text(
@@ -231,10 +227,7 @@ fun HomeScreen(
 
                     NavigationBarItem(
                         selected = (selectedTab == 6) || activeSubScreen != SubScreen.NONE,
-                        onClick = {
-                            selectedTab = 6
-                            activeSubScreen = SubScreen.NONE
-                        },
+                        onClick = { navigateToTab(6) },
                         icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                         label = {
                             Text(
