@@ -81,6 +81,7 @@ import com.example.data.usada.UsadaHerbInfo
 import com.example.data.usada.UsadaMethod
 import com.example.data.usada.UsadaRecipe
 import com.example.localization.AppLanguage
+import com.example.monetization.AdManager
 import com.example.monetization.BannerAdView
 import com.example.monetization.NativeAdCard
 import com.example.ui.MainViewModel
@@ -319,7 +320,7 @@ fun UsadaScreen(
         }
 
         // Banner Ad docked at bottom of UsadaScreen
-        BannerAdView(modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
+        BannerAdView(adUnitId = AdManager.BANNER_2_ID, modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
     }
 }
 

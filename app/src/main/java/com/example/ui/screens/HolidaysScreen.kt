@@ -62,6 +62,7 @@ import com.example.calendar.JavaneseHolidayCategory
 import com.example.calendar.JavaneseHolidayInstance
 import com.example.localization.AppLanguage
 import com.example.localization.StringResources
+import com.example.monetization.AdManager
 import com.example.monetization.BannerAdView
 import com.example.monetization.NativeAdCard
 import com.example.ui.JavaneseHolidayFilterTab
@@ -523,7 +524,7 @@ fun HolidaysScreen(
     }
 
     // Banner Ad docked at bottom of HolidaysScreen
-    BannerAdView(modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
+    BannerAdView(adUnitId = AdManager.BANNER_1_ID, modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp))
     }
 
     holidayToShowDetail?.let { holiday ->

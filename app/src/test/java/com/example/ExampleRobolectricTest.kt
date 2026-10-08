@@ -46,4 +46,24 @@ class ExampleRobolectricTest {
     assertEquals("Bagikan / Kirim Aplikasi", shareTitle)
     assertEquals("Beri Rating & Ulasan", rateTitle)
   }
+
+  @Test
+  fun `verify ironSource configuration keys`() {
+    assertEquals("28923b09d", com.example.monetization.AdManager.APP_KEY)
+    assertEquals("u69dlx056j56xqeo", com.example.monetization.AdManager.BANNER_1_ID)
+    assertEquals("89bmz131ymy183nt", com.example.monetization.AdManager.BANNER_2_ID)
+    assertEquals("9q3ur98wulcj7q2s", com.example.monetization.AdManager.INTERSTITIAL_ID)
+    assertEquals("tmf1a39uruhmkzjb", com.example.monetization.AdManager.NATIVE_ID)
+    assertEquals("2wm05o1m4l5n6s8n", com.example.monetization.AdManager.REWARDED_ID)
+    assertEquals(16, com.example.monetization.AdManager.INTERSTITIAL_CLICK_THRESHOLD)
+    assertEquals(90_000L, com.example.monetization.AdManager.INTERSTITIAL_COOLDOWN_MILLIS)
+  }
+
+  @Test
+  fun `verify meta and yandex adapters present on classpath`() {
+    val metaAdapterClass = Class.forName("com.ironsource.adapters.facebook.FacebookAdapter")
+    val yandexAdapterClass = Class.forName("com.ironsource.adapters.yandex.YandexAdapter")
+    org.junit.Assert.assertNotNull(metaAdapterClass)
+    org.junit.Assert.assertNotNull(yandexAdapterClass)
+  }
 }

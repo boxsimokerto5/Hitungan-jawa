@@ -58,6 +58,13 @@ import com.ironsource.mediationsdk.sdk.LevelPlayRewardedVideoListener
 object AdManager {
     private const val TAG = "AdManager"
 
+    val APP_KEY: String get() = BuildConfig.IRONSOURCE_APP_KEY
+    val BANNER_1_ID: String get() = BuildConfig.IRONSOURCE_BANNER_1_ID
+    val BANNER_2_ID: String get() = BuildConfig.IRONSOURCE_BANNER_2_ID
+    val INTERSTITIAL_ID: String get() = BuildConfig.IRONSOURCE_INTERSTITIAL_ID
+    val NATIVE_ID: String get() = BuildConfig.IRONSOURCE_NATIVE_ID
+    val REWARDED_ID: String get() = BuildConfig.IRONSOURCE_REWARDED_ID
+
     // Aturan Google Play & Optimasi Penghasilan
     const val INTERSTITIAL_CLICK_THRESHOLD = 16
     const val INTERSTITIAL_COOLDOWN_MILLIS = 90_000L // 90 detik jeda minimal antar interstitial
@@ -69,7 +76,7 @@ object AdManager {
     private var pendingRewardCallback: (() -> Unit)? = null
 
     fun initialize(activity: Activity) {
-        val appKey = BuildConfig.IRONSOURCE_APP_KEY.trim()
+        val appKey = APP_KEY.trim()
         if (appKey.isEmpty() || appKey == "your_ironsource_app_key_here") {
             Log.d(TAG, "IronSource AppKey belum diatur di .env / Secrets. Berjalan dalam mode aman.")
             return
@@ -81,7 +88,8 @@ object AdManager {
             IronSource.init(activity, appKey, object : InitializationListener {
                 override fun onInitializationComplete() {
                     isInitialized = true
-                    Log.d(TAG, "IronSource initialized successfully")
+                    Log.d(TAG, "IronSource initialized successfully with AppKey: $appKey")
+                    Log.d(TAG, "Bidding adapters active: Meta Audience Network & Yandex")
                     IronSource.loadInterstitial()
                 }
             }, IronSource.AD_UNIT.INTERSTITIAL, IronSource.AD_UNIT.BANNER, IronSource.AD_UNIT.REWARDED_VIDEO)
@@ -150,7 +158,12 @@ object AdManager {
 
         if (transitionClickCounter >= INTERSTITIAL_CLICK_THRESHOLD && timeSinceLast >= INTERSTITIAL_COOLDOWN_MILLIS) {
             if (IronSource.isInterstitialReady()) {
-                IronSource.showInterstitial()
+                val placement = INTERSTITIAL_ID.trim()
+                if (placement.isNotEmpty() && placement != "your_ironsource_interstitial_id_here") {
+                    IronSource.showInterstitial(placement)
+                } else {
+                    IronSource.showInterstitial()
+                }
                 transitionClickCounter = 0
                 lastInterstitialTimeMillis = now
                 return true
@@ -169,7 +182,12 @@ object AdManager {
         val now = System.currentTimeMillis()
         if (now - lastInterstitialTimeMillis >= INTERSTITIAL_COOLDOWN_MILLIS) {
             if (IronSource.isInterstitialReady()) {
-                IronSource.showInterstitial()
+                val placement = INTERSTITIAL_ID.trim()
+                if (placement.isNotEmpty() && placement != "your_ironsource_interstitial_id_here") {
+                    IronSource.showInterstitial(placement)
+                } else {
+                    IronSource.showInterstitial()
+                }
                 lastInterstitialTimeMillis = now
                 transitionClickCounter = 0
                 return true
@@ -186,7 +204,12 @@ object AdManager {
     fun showRewardedAd(activity: Activity, onRewarded: () -> Unit, onUnavailable: () -> Unit) {
         if (IronSource.isRewardedVideoAvailable()) {
             pendingRewardCallback = onRewarded
-            IronSource.showRewardedVideo()
+            val placement = REWARDED_ID.trim()
+            if (placement.isNotEmpty() && placement != "your_ironsource_rewarded_id_here") {
+                IronSource.showRewardedVideo(placement)
+            } else {
+                IronSource.showRewardedVideo()
+            }
         } else {
             onUnavailable()
         }

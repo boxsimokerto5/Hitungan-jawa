@@ -63,6 +63,7 @@ import com.ironsource.mediationsdk.IronSourceBannerLayout
  */
 @Composable
 fun BannerAdView(
+    adUnitId: String = AdManager.BANNER_1_ID,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -70,13 +71,18 @@ fun BannerAdView(
 
     var bannerLayout by remember { mutableStateOf<IronSourceBannerLayout?>(null) }
 
-    DisposableEffect(activity) {
+    DisposableEffect(activity, adUnitId) {
         if (activity != null) {
             try {
                 val layout = IronSource.createBanner(activity, ISBannerSize.BANNER)
                 bannerLayout = layout
                 if (layout != null) {
-                    IronSource.loadBanner(layout)
+                    val placement = adUnitId.trim()
+                    if (placement.isNotEmpty() && placement != "your_ironsource_banner_id_here") {
+                        IronSource.loadBanner(layout, placement)
+                    } else {
+                        IronSource.loadBanner(layout)
+                    }
                 }
             } catch (_: Exception) {}
         }
