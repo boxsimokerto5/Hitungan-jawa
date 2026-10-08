@@ -134,7 +134,6 @@ dependencies {
   implementation("com.facebook.android:audience-network-sdk:6.18.0")
   implementation("com.ironsource.adapters:yandexadapter:5.1.0")
   implementation("com.yandex.android:mobileads:7.9.0")
-  implementation("com.yandex.ads.mediation:mobileads-ironsource:7.9.0.0")
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)
   testImplementation(libs.androidx.junit)

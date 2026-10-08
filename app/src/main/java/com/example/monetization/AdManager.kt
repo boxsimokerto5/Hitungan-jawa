@@ -76,6 +76,9 @@ object AdManager {
     private var pendingRewardCallback: (() -> Unit)? = null
 
     fun initialize(activity: Activity) {
+        // Pasang pengaman unhandled exception handler untuk thread latar belakang SDK iklan pihak ketiga
+        installAdCrashGuard()
+
         val appKey = APP_KEY.trim()
         if (appKey.isEmpty() || appKey == "your_ironsource_app_key_here") {
             Log.d(TAG, "IronSource AppKey belum diatur di .env / Secrets. Berjalan dalam mode aman.")
@@ -85,10 +88,9 @@ object AdManager {
         if (isInitialized) return
 
         try {
-            // Nonaktifkan logging diagnostik internal Yandex agar tidak memenuhi logcat
+            // Nonaktifkan logging diagnostik internal Yandex jika class tersedia
             com.yandex.mobile.ads.common.MobileAds.enableLogging(false)
             com.yandex.mobile.ads.common.MobileAds.enableDebugErrorIndicator(false)
-            com.yandex.mobile.ads.common.MobileAds.initialize(activity) {}
         } catch (_: Throwable) {}
 
         try {
@@ -232,4 +234,28 @@ object AdManager {
 
     fun getTransitionClickCount(): Int = transitionClickCounter
     fun getLastAdTime(): Long = lastInterstitialTimeMillis
+
+    private var isCrashGuardInstalled = false
+
+    private fun installAdCrashGuard() {
+        if (isCrashGuardInstalled) return
+        isCrashGuardInstalled = true
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            val threadName = thread.name.lowercase()
+            val isAdThread = threadName.contains("yandex") ||
+                    threadName.contains("ironsource") ||
+                    threadName.contains("audiencenetwork") ||
+                    threadName.contains("adservices")
+            val isAdThrowable = generateSequence(throwable) { it.cause }.any { t ->
+                val str = t.toString().lowercase()
+                str.contains("yandex") || str.contains("monetization.ads") || str.contains("ironsource")
+            }
+            if (isAdThread || isAdThrowable) {
+                Log.w(TAG, "Suppressed background ad SDK exception on thread [${thread.name}]: ${throwable.message}")
+            } else {
+                previousHandler?.uncaughtException(thread, throwable)
+            }
+        }
+    }
 }
