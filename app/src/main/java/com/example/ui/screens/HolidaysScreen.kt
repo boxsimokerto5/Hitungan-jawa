@@ -64,6 +64,7 @@ import com.example.localization.StringResources
 import com.example.ui.JavaneseHolidayFilterTab
 import com.example.ui.MainViewModel
 import com.example.ui.components.HolidayDetailDialog
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
@@ -116,23 +117,10 @@ fun HolidaysScreen(
             .background(KremJawa)
     ) {
         // Top Sogan & Keraton Gold Header (FIXED)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 12.dp
         ) {
-                Column {
-                    Row(
+            Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -227,8 +215,7 @@ fun HolidaysScreen(
                             .testTag("holiday_search_input"),
                         shape = RoundedCornerShape(12.dp)
                     )
-                }
-            }
+        }
 
         // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
         LazyColumn(

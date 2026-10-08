@@ -60,6 +60,7 @@ import com.example.localization.AppLanguage
 import com.example.localization.StringResources
 import com.example.notification.NotificationHelper
 import com.example.ui.MainViewModel
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
@@ -95,83 +96,69 @@ fun SettingsScreen(
             .background(KremJawa)
     ) {
         // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 12.dp
         ) {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(KeratonGoldContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = null,
-                                tint = SoganDark,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                text = StringResources.get("tab_settings", language),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = if (language == AppLanguage.JAVANESE) "Basa, Notifikasi & Info Pananggalan"
-                                else if (language == AppLanguage.INDONESIAN) "Bahasa, Notifikasi & Info Kalender"
-                                else "Language, Notifications & Calendar Info",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = KeratonGold,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
-
-                    IconButton(
-                        onClick = {
-                            val nextLang = when (language) {
-                                AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
-                                AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
-                                AppLanguage.ENGLISH -> AppLanguage.JAVANESE
-                            }
-                            viewModel.setLanguage(nextLang)
-                        },
-                        modifier = Modifier.size(34.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(KeratonGoldContainer),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = when (language) {
-                                AppLanguage.JAVANESE -> "JV"
-                                AppLanguage.INDONESIAN -> "ID"
-                                AppLanguage.ENGLISH -> "EN"
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = KeratonGold
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = null,
+                            tint = SoganDark,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Text(
+                            text = StringResources.get("tab_settings", language),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = if (language == AppLanguage.JAVANESE) "Basa, Notifikasi & Info Pananggalan"
+                            else if (language == AppLanguage.INDONESIAN) "Bahasa, Notifikasi & Info Kalender"
+                            else "Language, Notifications & Calendar Info",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = KeratonGold,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = {
+                        val nextLang = when (language) {
+                            AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
+                            AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
+                            AppLanguage.ENGLISH -> AppLanguage.JAVANESE
+                        }
+                        viewModel.setLanguage(nextLang)
+                    },
+                    modifier = Modifier.size(34.dp)
+                ) {
+                    Text(
+                        text = when (language) {
+                            AppLanguage.JAVANESE -> "JV"
+                            AppLanguage.INDONESIAN -> "ID"
+                            AppLanguage.ENGLISH -> "EN"
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = KeratonGold
+                    )
                 }
             }
         }

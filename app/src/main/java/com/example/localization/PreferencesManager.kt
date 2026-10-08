@@ -34,10 +34,17 @@ class PreferencesManager(context: Context) {
             prefs.edit().putString(KEY_USER_BIRTH_DATE, value).apply()
         }
 
+    var favoriteUsadaIds: Set<String>
+        get() = prefs.getStringSet(KEY_USADA_FAVORITES, emptySet()) ?: emptySet()
+        set(value) {
+            prefs.edit().putStringSet(KEY_USADA_FAVORITES, value).apply()
+        }
+
     companion object {
         private const val KEY_LANGUAGE = "key_app_language"
         private const val KEY_HOLIDAY_NOTIF = "key_holiday_notif"
         private const val KEY_ACTIVITY_NOTIF = "key_activity_notif"
         private const val KEY_USER_BIRTH_DATE = "key_user_birth_date"
+        private const val KEY_USADA_FAVORITES = "key_usada_favorites"
     }
 }

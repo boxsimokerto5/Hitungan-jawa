@@ -27,6 +27,11 @@ object StringResources {
             AppLanguage.INDONESIAN to "Hitungan Jawa",
             AppLanguage.ENGLISH to "Hitungan Jawa"
         ),
+        "tab_usada" to mapOf(
+            AppLanguage.JAVANESE to "Usada",
+            AppLanguage.INDONESIAN to "Usada",
+            AppLanguage.ENGLISH to "Usada"
+        ),
         "tab_holidays" to mapOf(
             AppLanguage.JAVANESE to "Tradisi & Pèngetan",
             AppLanguage.INDONESIAN to "Hari Besar & Tradisi",

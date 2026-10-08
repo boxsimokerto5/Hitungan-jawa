@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,6 +84,7 @@ import com.example.ui.MainViewModel
 import com.example.ui.components.AddEditEventDialog
 import com.example.ui.components.HolidayDetailDialog
 import com.example.ui.components.JavaneseDatePickerDialog
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.components.MonthYearPickerDialog
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
@@ -157,25 +159,11 @@ fun CalendarScreen(
             .background(KremJawa)
     ) {
         // 1. SOGAN & KERATON GOLD TOP BANNER (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41),
-                            Color(0xFF795548)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 14.dp
         ) {
-                Column {
-                    // Profile & Top Icon Row
-                    Row(
+            // Profile & Top Icon Row
+            Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -418,8 +406,7 @@ fun CalendarScreen(
                             }
                         }
                     }
-                }
-            }
+        }
 
         // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)
         LazyColumn(

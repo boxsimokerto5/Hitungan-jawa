@@ -83,6 +83,7 @@ import com.example.calendar.WetonKelahiran
 import com.example.localization.AppLanguage
 import com.example.localization.StringResources
 import com.example.ui.MainViewModel
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
@@ -130,87 +131,72 @@ fun WetonScreen(
             .background(KremJawa)
     ) {
         // 1. TOP HEADER BANNER (FIXED)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41),
-                            Color(0xFF795548)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 12.dp
         ) {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
-                            contentDescription = "App Logo",
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                text = StringResources.get("weton_calculator_title", language),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Dina • Pasaran • Neptu • Watak Primbon",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = KeratonGold,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
-
-                    IconButton(
-                        onClick = {
-                            val nextLang = when (language) {
-                                AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
-                                AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
-                                AppLanguage.ENGLISH -> AppLanguage.JAVANESE
-                            }
-                            viewModel.setLanguage(nextLang)
-                        },
-                        modifier = Modifier.size(34.dp)
-                    ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_hitungan_jawa_logo_1791383285970),
+                        contentDescription = "App Logo",
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
                         Text(
-                            text = when (language) {
-                                AppLanguage.JAVANESE -> "JV"
-                                AppLanguage.INDONESIAN -> "ID"
-                                AppLanguage.ENGLISH -> "EN"
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = KeratonGold
+                            text = StringResources.get("weton_calculator_title", language),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Dina • Pasaran • Neptu • Watak Primbon",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = KeratonGold,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = StringResources.get("weton_calculator_desc", language),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 11.5.sp
-                )
+                IconButton(
+                    onClick = {
+                        val nextLang = when (language) {
+                            AppLanguage.JAVANESE -> AppLanguage.INDONESIAN
+                            AppLanguage.INDONESIAN -> AppLanguage.ENGLISH
+                            AppLanguage.ENGLISH -> AppLanguage.JAVANESE
+                        }
+                        viewModel.setLanguage(nextLang)
+                    },
+                    modifier = Modifier.size(34.dp)
+                ) {
+                    Text(
+                        text = when (language) {
+                            AppLanguage.JAVANESE -> "JV"
+                            AppLanguage.INDONESIAN -> "ID"
+                            AppLanguage.ENGLISH -> "EN"
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = KeratonGold
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = StringResources.get("weton_calculator_desc", language),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.9f),
+                fontSize = 11.5.sp
+            )
         }
 
         Spacer(modifier = Modifier.height(6.dp))

@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.localization.AppLanguage
 import com.example.localization.StringResources
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
 import com.example.ui.theme.KremJawa
@@ -65,55 +66,41 @@ fun AboutUsScreen(
             .background(KremJawa)
     ) {
         // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 12.dp
         ) {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.25f))
+                        .testTag("about_back_button")
                 ) {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.25f))
-                            .testTag("about_back_button")
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = StringResources.get("back", language),
-                            tint = Color.White
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = StringResources.get("about_us", language),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Almanak & Kalender Jawa Lengkap",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = KeratonGold,
-                            fontSize = 11.sp
-                        )
-                    }
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = StringResources.get("back", language),
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = StringResources.get("about_us", language),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Almanak & Kalender Jawa Lengkap",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = KeratonGold,
+                        fontSize = 11.sp
+                    )
                 }
             }
         }

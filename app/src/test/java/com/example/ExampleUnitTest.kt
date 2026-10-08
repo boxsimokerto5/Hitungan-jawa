@@ -152,4 +152,34 @@ class ExampleUnitTest {
         // 7 days
         assertEquals(LocalDate.of(2026, 1, 7), milestones[2].targetDate)
     }
+
+    @Test
+    fun usadaDataRepository_containsComprehensiveRecipesAndHerbs() {
+        val recipes = com.example.data.usada.UsadaDataRepository.recipes
+        assertTrue(recipes.isNotEmpty())
+        assertTrue(recipes.size >= 15)
+
+        // Verify categories
+        val categories = com.example.data.usada.UsadaDataRepository.categories
+        assertEquals(7, categories.size)
+
+        // Verify methods
+        val methods = com.example.data.usada.UsadaDataRepository.methods
+        assertEquals(5, methods.size)
+
+        // Verify search by illness
+        val batukResults = com.example.data.usada.UsadaDataRepository.filterRecipes(query = "batuk")
+        assertTrue(batukResults.isNotEmpty())
+        assertTrue(batukResults.any { it.illnessName.contains("Batuk", ignoreCase = true) })
+
+        // Verify search by herb ingredient
+        val jaheResults = com.example.data.usada.UsadaDataRepository.filterRecipes(query = "jahe")
+        assertTrue(jaheResults.isNotEmpty())
+
+        // Verify herbs glossary
+        val herbs = com.example.data.usada.UsadaDataRepository.herbsGlossary
+        assertTrue(herbs.size >= 10)
+        assertTrue(herbs.any { it.indonesianName.contains("Jahe") })
+        assertTrue(herbs.any { it.indonesianName.contains("Kunir") || it.indonesianName.contains("Kunyit") })
+    }
 }

@@ -10,6 +10,7 @@ val SoganLight = Color(0xFF8D6E63)
 
 val KeratonGold = Color(0xFFC59B27)
 val KeratonGoldLight = Color(0xFFE5C158)
+val KeratonGoldDark = Color(0xFF997515)
 val KeratonGoldContainer = Color(0xFFFFF4D2)
 val KencanaAmber = Color(0xFFD97706)
 

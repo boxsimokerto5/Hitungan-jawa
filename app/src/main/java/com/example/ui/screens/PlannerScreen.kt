@@ -61,6 +61,7 @@ import com.example.localization.AppLanguage
 import com.example.localization.StringResources
 import com.example.ui.MainViewModel
 import com.example.ui.components.AddEditEventDialog
+import com.example.ui.components.JavaneseHeaderBanner
 import com.example.ui.theme.BataMerah
 import com.example.ui.theme.KeratonGold
 import com.example.ui.theme.KeratonGoldContainer
@@ -93,23 +94,10 @@ fun PlannerScreen(
             .background(KremJawa)
     ) {
         // Top Banner (FIXED / TIDAK IKUT SCROLL NAIK-TURUN)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            SoganDark,
-                            SoganPrimary,
-                            Color(0xFF6D4C41)
-                        )
-                    )
-                )
-                .statusBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)
+        JavaneseHeaderBanner(
+            contentPaddingBottom = 12.dp
         ) {
-            Column {
-                Row(
+            Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -273,7 +261,6 @@ fun PlannerScreen(
                         }
                     }
                 }
-            }
         }
 
         // SCROLLABLE CONTENT (HANYA BAGIAN INI YANG BERGERAK)

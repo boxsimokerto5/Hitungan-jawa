@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +42,7 @@ import com.example.ui.screens.HolidaysScreen
 import com.example.ui.screens.PlannerScreen
 import com.example.ui.screens.PrivacyPolicyScreen
 import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.UsadaScreen
 import com.example.ui.screens.WetonScreen
 import com.example.ui.screens.hitungan.HitunganJawaScreen
 import com.example.ui.theme.KeratonGoldContainer
@@ -81,8 +84,9 @@ fun HomeScreen(
                             Text(
                                 StringResources.get("tab_calendar", language),
                                 fontWeight = if (selectedTab == 0 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -106,8 +110,9 @@ fun HomeScreen(
                             Text(
                                 StringResources.get("tab_weton", language),
                                 fontWeight = if (selectedTab == 1 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -131,8 +136,9 @@ fun HomeScreen(
                             Text(
                                 StringResources.get("tab_hitungan_jawa", language),
                                 fontWeight = if (selectedTab == 2 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -151,13 +157,40 @@ fun HomeScreen(
                             selectedTab = 3
                             activeSubScreen = SubScreen.NONE
                         },
+                        icon = { Icon(Icons.Default.Spa, contentDescription = null) },
+                        label = {
+                            Text(
+                                StringResources.get("tab_usada", language),
+                                fontWeight = if (selectedTab == 3 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFF2E7D32),
+                            selectedTextColor = Color(0xFF2E7D32),
+                            indicatorColor = Color(0xFFE8F5E9),
+                            unselectedIconColor = Color(0xFF8D6E63),
+                            unselectedTextColor = Color(0xFF8D6E63)
+                        ),
+                        modifier = Modifier.testTag("nav_item_usada")
+                    )
+
+                    NavigationBarItem(
+                        selected = selectedTab == 4 && activeSubScreen == SubScreen.NONE,
+                        onClick = {
+                            selectedTab = 4
+                            activeSubScreen = SubScreen.NONE
+                        },
                         icon = { Icon(Icons.Default.Celebration, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_holidays", language),
-                                fontWeight = if (selectedTab == 3 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontWeight = if (selectedTab == 4 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -171,18 +204,19 @@ fun HomeScreen(
                     )
 
                     NavigationBarItem(
-                        selected = selectedTab == 4 && activeSubScreen == SubScreen.NONE,
+                        selected = selectedTab == 5 && activeSubScreen == SubScreen.NONE,
                         onClick = {
-                            selectedTab = 4
+                            selectedTab = 5
                             activeSubScreen = SubScreen.NONE
                         },
                         icon = { Icon(Icons.Default.EventNote, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_planner", language),
-                                fontWeight = if (selectedTab == 4 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontWeight = if (selectedTab == 5 && activeSubScreen == SubScreen.NONE) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -196,18 +230,19 @@ fun HomeScreen(
                     )
 
                     NavigationBarItem(
-                        selected = (selectedTab == 5) || activeSubScreen != SubScreen.NONE,
+                        selected = (selectedTab == 6) || activeSubScreen != SubScreen.NONE,
                         onClick = {
-                            selectedTab = 5
+                            selectedTab = 6
                             activeSubScreen = SubScreen.NONE
                         },
                         icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                         label = {
                             Text(
                                 StringResources.get("tab_settings", language),
-                                fontWeight = if (selectedTab == 5) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 10.sp,
-                                maxLines = 1
+                                fontWeight = if (selectedTab == 6) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -257,18 +292,21 @@ fun HomeScreen(
                             2 -> HitunganJawaScreen(
                                 viewModel = viewModel
                             )
-                            3 -> HolidaysScreen(
+                            3 -> UsadaScreen(
+                                viewModel = viewModel
+                            )
+                            4 -> HolidaysScreen(
                                 viewModel = viewModel,
                                 onNavigateToDate = { date ->
                                     viewModel.selectDate(date)
                                     selectedTab = 0
                                 }
                             )
-                            4 -> PlannerScreen(
+                            5 -> PlannerScreen(
                                 viewModel = viewModel,
                                 onNavigateToCalendar = { selectedTab = 0 }
                             )
-                            5 -> SettingsScreen(
+                            6 -> SettingsScreen(
                                 viewModel = viewModel,
                                 onNavigateToAboutUs = { activeSubScreen = SubScreen.ABOUT_US },
                                 onNavigateToPrivacyPolicy = { activeSubScreen = SubScreen.PRIVACY_POLICY }

@@ -345,4 +345,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun hitungKecocokanJodoh(weton1: WetonKelahiran, weton2: WetonKelahiran): JodohPetunganResult {
         return WetonKelahiranEngine.hitungKecocokanJodoh(weton1, weton2)
     }
+
+    // ==========================================
+    // USADA JAWA (HERBAL & REMEDIES) STATE
+    // ==========================================
+    private val _favoriteUsadaIds = MutableStateFlow<Set<String>>(prefs.favoriteUsadaIds)
+    val favoriteUsadaIds: StateFlow<Set<String>> = _favoriteUsadaIds.asStateFlow()
+
+    fun toggleFavoriteUsada(recipeId: String) {
+        val current = _favoriteUsadaIds.value.toMutableSet()
+        if (current.contains(recipeId)) {
+            current.remove(recipeId)
+        } else {
+            current.add(recipeId)
+        }
+        prefs.favoriteUsadaIds = current
+        _favoriteUsadaIds.value = current
+    }
+
+    fun isUsadaFavorite(recipeId: String): Boolean {
+        return _favoriteUsadaIds.value.contains(recipeId)
+    }
 }
